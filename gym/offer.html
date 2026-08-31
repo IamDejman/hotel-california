@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Streamly+ | A gift for you</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<header><div class="logo">Streamly+</div></header>
+<main>
+  <h1>Wait! We'd hate to lose you</h1>
+  <div class="card">
+    <h2>50% off for 3 months</h2>
+    <p>Keep everything you love for just $7.99 a month. This one-time offer expires in <span class="countdown" id="cd">4:59</span>.</p>
+    <a class="btn btn-gold" href="index.html">Claim my 50% discount</a>
+    <p><a class="btn-ghost" href="guilt.html">No thanks, I still want to cancel</a></p>
+  </div>
+</main>
+<script>
+  let s = 299;
+  setInterval(() => {
+    s = Math.max(0, s - 1);
+    document.getElementById("cd").textContent = Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
+  }, 1000);
+</script>
+</body>
+</html>

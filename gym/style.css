@@ -1,0 +1,20 @@
+* { margin: 0; box-sizing: border-box; font-family: -apple-system, "Segoe UI", Roboto, sans-serif; }
+body { background: #0e0b1e; color: #eee9ff; min-height: 100vh; }
+header { display: flex; justify-content: space-between; align-items: center; padding: 18px 40px; border-bottom: 1px solid #2a2447; }
+.logo { font-size: 22px; font-weight: 800; color: #a78bfa; letter-spacing: -0.5px; }
+nav a { color: #b8b3d1; text-decoration: none; margin-left: 22px; font-size: 14px; }
+main { max-width: 640px; margin: 48px auto; padding: 0 24px; }
+h1 { font-size: 30px; margin-bottom: 12px; }
+p { color: #b8b3d1; line-height: 1.6; margin-bottom: 16px; }
+.card { background: #171331; border: 1px solid #2a2447; border-radius: 14px; padding: 28px; margin-bottom: 20px; }
+.btn { display: inline-block; border: 0; border-radius: 10px; padding: 14px 26px; font-size: 16px; font-weight: 700; cursor: pointer; text-decoration: none; }
+.btn-primary { background: #7c3aed; color: #fff; }
+.btn-gold { background: linear-gradient(90deg, #f59e0b, #ef4444); color: #fff; font-size: 18px; padding: 18px 34px; }
+.btn-ghost { background: transparent; color: #6b6590; font-size: 12px; text-decoration: underline; padding: 6px; }
+.tiny { font-size: 11px; color: #4d4870; }
+footer { max-width: 640px; margin: 60px auto 40px; padding: 0 24px; color: #4d4870; font-size: 11px; }
+footer a { color: #4d4870; }
+.spinner { width: 36px; height: 36px; border: 4px solid #2a2447; border-top-color: #a78bfa; border-radius: 50%; animation: spin 1s linear infinite; margin: 20px 0; }
+@keyframes spin { to { transform: rotate(360deg); } }
+label { display: block; padding: 10px 0; color: #d6d1ee; cursor: pointer; }
+.countdown { color: #f59e0b; font-weight: 800; }

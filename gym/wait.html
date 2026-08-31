@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Streamly+ | One moment</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<header><div class="logo">Streamly+</div></header>
+<main>
+  <h1>Connecting you to a cancellation specialist</h1>
+  <div class="card">
+    <div class="spinner" id="spin"></div>
+    <p id="msg">Please stay on this page. A specialist is reviewing your account...</p>
+    <button id="continue" class="btn btn-primary" disabled>Continue to cancellation</button>
+  </div>
+</main>
+<script>
+  setTimeout(() => {
+    document.getElementById("spin").style.display = "none";
+    document.getElementById("msg").textContent = "All of our specialists are busy. You may continue online.";
+    document.getElementById("continue").disabled = false;
+  }, 6000);
+  document.getElementById("continue").addEventListener("click", () => { location.href = "confirm.html"; });
+</script>
+</body>
+</html>

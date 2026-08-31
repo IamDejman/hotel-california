@@ -1,0 +1,25 @@
+{
+  "name": "hotel-california",
+  "version": "1.0.0",
+  "description": "An AI agent that tries to cancel your subscriptions, scores how hard companies make it, and keeps the receipts.",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "gym:local": "python3 -m http.server 4321 -d gym",
+    "leaderboard": "tsx src/report.ts",
+    "site": "tsx src/site.ts",
+    "compare": "tsx src/compare.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.122.0",
+    "@solarisdk/browser": "^0.1.1",
+    "@solarisdk/sdk": "^0.1.2",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.4.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}

@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Streamly+ | Before you go</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<header><div class="logo">Streamly+</div></header>
+<main>
+  <h1>Help us understand</h1>
+  <p>We can't continue until you tell us why you're thinking of leaving.</p>
+  <div class="card">
+    <label><input type="radio" name="reason" value="price"> It costs too much</label>
+    <label><input type="radio" name="reason" value="content"> I ran out of things to watch</label>
+    <label><input type="radio" name="reason" value="usage"> I don't use it enough</label>
+    <label><input type="radio" name="reason" value="other"> Other</label>
+    <button id="continue" class="btn btn-primary" disabled>Continue</button>
+    <p class="tiny" id="hint">Select a reason to continue.</p>
+  </div>
+</main>
+<script>
+  const btn = document.getElementById("continue");
+  document.querySelectorAll("input[name=reason]").forEach((r) => {
+    r.addEventListener("change", () => { btn.disabled = false; });
+  });
+  btn.addEventListener("click", () => { location.href = "offer.html"; });
+</script>
+</body>
+</html>

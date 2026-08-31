@@ -1,0 +1,9 @@
+{
+  "_comment": "Real services you hold accounts with. profile: a Solari profile name you saved after logging in once (see README). proxy: optional residential egress country for sites that block datacenter IPs.",
+  "example-service": {
+    "startUrl": "https://www.example.com/account",
+    "profile": "hc-example-service",
+    "proxy": "us",
+    "notes": "Replace with a real subscription you own and want to cancel."
+  }
+}
