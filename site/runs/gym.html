@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#2b1216">
+<title>Streamly+ (practice gym): Escape Score 26 (F)</title>
+<meta name="description" content="12 dark patterns logged on the way out. Watch the replay and read the itemized bill.">
+<meta property="og:title" content="Streamly+ (practice gym): Escape Score 26 (F)">
+<meta property="og:description" content="12 dark patterns logged on the way out. Watch the replay and read the itemized bill.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://iamdejman.github.io/hotel-california/runs/gym.html">
+<meta property="og:image" content="https://iamdejman.github.io/hotel-california/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Limelight&display=swap">
+<style>
+* { margin: 0; box-sizing: border-box; }
+:root {
+  color-scheme: dark;
+  --lobby: #2b1216; --panel: #371a1f; --line: #57303a; --ivory: #f3eadb;
+  --muted: #c3aa9f; --brass: #d4ad62; --good: #a6dcae; --mid: #eccb74; --bad: #ff9a86;
+  --marquee: "Limelight", Georgia, serif;
+}
+body { background: var(--lobby); color: var(--ivory); font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+a { color: var(--brass); text-underline-offset: 3px; }
+a:hover { color: var(--ivory); }
+:focus-visible { outline: 2px solid var(--brass); outline-offset: 3px; border-radius: 4px; }
+.wrap { max-width: 760px; margin: 0 auto; padding: 0 16px; }
+header.site { padding: 56px 0 28px; }
+.marquee { font-family: var(--marquee); font-weight: 400; font-size: clamp(40px, 9vw, 64px); line-height: 1.05; color: var(--brass); text-wrap: balance; }
+header.site p { color: var(--muted); max-width: 60ch; margin-top: 12px; text-wrap: pretty; }
+.back { display: inline-block; margin-bottom: 20px; font-size: 14px; }
+h1.run { font-size: 30px; line-height: 1.2; text-wrap: balance; overflow-wrap: anywhere; }
+h2 { font-size: 20px; margin: 36px 0 12px; }
+.num { font-variant-numeric: tabular-nums; }
+
+.register { list-style: none; padding: 0; border-top: 1px solid var(--line); }
+.register a { display: grid; grid-template-columns: 96px 1fr; gap: 20px; padding: 22px 8px; border-bottom: 1px solid var(--line); color: var(--ivory); text-decoration: none; }
+.register a:hover { background: var(--panel); }
+.register .score { font-family: var(--marquee); font-size: 48px; line-height: 1; }
+.register .grade { font-size: 14px; color: var(--muted); margin-top: 6px; }
+.register h2 { font-size: 19px; margin: 0; overflow-wrap: anywhere; }
+.register p { color: var(--muted); font-size: 14px; margin-top: 4px; }
+.grade-A, .grade-B { color: var(--good); }
+.grade-C, .grade-D { color: var(--mid); }
+.grade-F { color: var(--bad); }
+
+.facts { display: flex; flex-wrap: wrap; gap: 12px 32px; margin: 20px 0 8px; }
+.facts dt { font-size: 13px; color: var(--muted); }
+.facts dd { font-size: 22px; font-weight: 700; }
+.facts .score dd { font-family: var(--marquee); font-weight: 400; font-size: 34px; line-height: 1.1; }
+
+.player-shell { margin: 28px 0 8px; }
+#player { min-height: 120px; }
+#player .rr-player { max-width: 100%; background: var(--panel); box-shadow: none; }
+#player .rr-controller { background: var(--panel); color: var(--ivory); }
+#player .rr-timeline__time { color: var(--muted); }
+.player-note { color: var(--muted); font-size: 14px; margin-top: 10px; }
+.rr-progress { position: relative; }
+.marker { position: absolute; top: -9px; width: 20px; height: 24px; margin-left: -10px; padding: 0; border: 0; background: none; cursor: pointer; z-index: 5; touch-action: manipulation; }
+.marker::before { content: ""; position: absolute; left: 6px; top: 5px; width: 8px; height: 14px; border-radius: 2px; background: var(--bad); }
+.marker:hover::before { background: var(--ivory); }
+
+.bill { width: 100%; border-collapse: collapse; }
+.bill th { text-align: left; font-size: 13px; font-weight: 600; color: var(--muted); padding: 8px 0; border-bottom: 1px solid var(--line); }
+.bill td { padding: 14px 0; border-bottom: 1px dashed var(--line); vertical-align: top; }
+.bill .pts { text-align: right; white-space: nowrap; padding-left: 16px; font-variant-numeric: tabular-nums; }
+.bill .charge { font-weight: 600; }
+.bill .quote { color: var(--muted); font-size: 14px; margin-top: 4px; overflow-wrap: anywhere; }
+.bill button { margin-top: 8px; background: none; border: 1px solid var(--line); color: var(--brass); border-radius: 999px; padding: 4px 12px; font: inherit; font-size: 13px; cursor: pointer; touch-action: manipulation; }
+.bill button:hover { border-color: var(--brass); }
+.bill tfoot td { border-bottom: 0; padding-top: 10px; }
+.bill tfoot tr:last-child td { border-top: 2px solid var(--ivory); padding-top: 14px; font-size: 20px; font-weight: 700; }
+.report { color: var(--muted); max-width: 65ch; }
+.session { color: var(--muted); font-size: 13px; margin-top: 24px; overflow-wrap: anywhere; }
+footer.site { color: var(--muted); font-size: 13px; padding: 48px 0; }
+@media (max-width: 520px) { .register a { grid-template-columns: 72px 1fr; gap: 14px; } .register .score { font-size: 38px; } }
+</style>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/rrweb-player@1.0.0-alpha.4/dist/style.css">
+</head>
+<body>
+<main class="wrap">
+<header class="site">
+  <a class="back" href="../index.html">All checkouts</a>
+  <h1 class="run">Streamly+ (practice gym)</h1>
+  <dl class="facts">
+    <div class="score"><dt>Escape Score</dt><dd class="num grade-F">26 <span class="grade">F</span></dd></div>
+    <div><dt>Outcome</dt><dd>Cancelled</dd></div>
+    <div><dt>Clicks</dt><dd class="num">8</dd></div>
+    <div><dt>Time</dt><dd class="num">115s</dd></div>
+  </dl>
+</header>
+<section class="player-shell" aria-label="Session replay">
+  <div id="player"></div>
+  <p class="player-note">DOM-level replay recorded by the Solari cloud browser. Each tick on the timeline marks a charge on the bill.</p>
+</section>
+<script type="application/json" id="run-data">{"replay":"../replays/gym.ndjson","marks":[{"atMs":1790800207652,"label":"Hidden cancellation path"},{"atMs":1790800211179,"label":"Retention offer wall"},{"atMs":1790800221272,"label":"Mandatory exit survey"},{"atMs":1790800238549,"label":"Retention offer wall"},{"atMs":1790800241314,"label":"Fake urgency or countdown"},{"atMs":1790800244032,"label":"Visual misdirection (keep-button styled over cancel)"},{"atMs":1790800255643,"label":"Guilt-trip screen"},{"atMs":1790800258652,"label":"Confirmshaming button copy"},{"atMs":1790800262395,"label":"Repeated are-you-sure confirmations"},{"atMs":1790800272102,"label":"Artificial waiting or fake processing"},{"atMs":1790800282131,"label":"Threats of losing grandfathered pricing"},{"atMs":1790800286473,"label":"Repeated are-you-sure confirmations"}]}</script>
+<script src="https://cdn.jsdelivr.net/npm/rrweb-player@1.0.0-alpha.4/dist/index.js"></script>
+<script>
+const run = JSON.parse(document.getElementById("run-data").textContent);
+const mount = document.getElementById("player");
+const motion = matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+
+async function boot() {
+  const res = await fetch(run.replay);
+  if (!res.ok) throw new Error("replay request failed: " + res.status);
+  const events = (await res.text()).split("\n").filter(Boolean).map((l) => JSON.parse(l));
+  if (events.length < 2) throw new Error("replay is empty");
+  const start = events[0].timestamp;
+  const span = events[events.length - 1].timestamp - start;
+  const width = mount.clientWidth;
+  const player = new rrwebPlayer({
+    target: mount,
+    props: { events, autoPlay: false, width, height: Math.round(width * 0.62) },
+  });
+  // Open on the first real page instead of the blank tab the browser starts on.
+  const firstPage = events.find((e) => e.type === 4 && String(e.data.href).startsWith("http"));
+  if (firstPage) player.goto(firstPage.timestamp - start + 50, false);
+
+  const offsets = run.marks.map((m) => Math.max(0, Math.min(m.atMs - start, span)));
+  const watch = (i) => {
+    player.goto(offsets[i], true);
+    mount.scrollIntoView({ behavior: motion, block: "center" });
+  };
+  const bar = await waitFor(".rr-progress");
+  offsets.forEach((off, i) => {
+    const m = document.createElement("button");
+    m.className = "marker";
+    m.type = "button";
+    m.title = run.marks[i].label;
+    m.setAttribute("aria-label", "Jump to: " + run.marks[i].label);
+    m.style.left = (off / span) * 100 + "%";
+    m.addEventListener("click", (e) => { e.stopPropagation(); watch(i); });
+    bar.appendChild(m);
+  });
+  document.querySelectorAll("[data-mark]").forEach((btn) => {
+    btn.hidden = false;
+    btn.addEventListener("click", () => watch(Number(btn.dataset.mark)));
+  });
+}
+
+function waitFor(selector) {
+  return new Promise((resolve) => {
+    const tick = () => { const el = document.querySelector(selector); el ? resolve(el) : requestAnimationFrame(tick); };
+    tick();
+  });
+}
+
+boot().catch((err) => {
+  console.error(err);
+  const note = document.createElement("p");
+  note.className = "player-note";
+  note.textContent = "The replay did not load (" + err.message + "). Reload the page to try again.";
+  mount.replaceChildren(note);
+});
+</script>
+<h2>Checkout bill</h2>
+<table class="bill">
+  <thead><tr><th scope="col">Charge</th><th scope="col" class="pts">Points</th></tr></thead>
+  <tbody>
+<tr>
+  <td><div class="charge">Hidden cancellation path</div><p class="quote">The cancellation link &quot;continue to membership cancellation&quot; is buried at the bottom of the page, below pause and plan switch offers, as a small text link.</p><button type="button" data-mark="0" aria-label="Watch it happen: Hidden cancellation path" hidden>Watch it happen</button></td>
+  <td class="pts">&minus;8</td>
+</tr>
+<tr>
+  <td><div class="charge">Retention offer wall</div><p class="quote">&quot;Pause your membership for up to 3 months. Keep your profile, watchlist, and grandfathered price.&quot; and &quot;Standard with ads is only $6.99 a month.&quot; offered before cancellation link.</p><button type="button" data-mark="1" aria-label="Watch it happen: Retention offer wall" hidden>Watch it happen</button></td>
+  <td class="pts">&minus;8</td>
+</tr>
+<tr>
+  <td><div class="charge">Mandatory exit survey</div><p class="quote">&quot;We can't continue until you tell us why you're thinking of leaving.&quot; - must select a reason to continue cancellation.</p><button type="button" data-mark="2" aria-label="Watch it happen: Mandatory exit survey" hidden>Watch it happen</button></td>
+  <td class="pts">&minus;4</td>
+</tr>
+<tr>
+  <td><div class="charge">Retention offer wall</div><p class="quote">&quot;50% off for 3 months - Keep everything you love for just $7.99 a month.&quot;</p><button type="button" data-mark="3" aria-label="Watch it happen: Retention offer wall" hidden>Watch it happen</button></td>
+  <td class="pts">&minus;8</td>
+</tr>
+<tr>
+  <td><div class="charge">Fake urgency or countdown</div><p class="quote">&quot;This one-time offer expires in 4:57&quot; - countdown timer to pressure user into accepting the discount.</p><button type="button" data-mark="4" aria-label="Watch it happen: Fake urgency or countdown" hidden>Watch it happen</button></td>
+  <td class="pts">&minus;4</td>
+</tr>
+<tr>
+  <td><div class="charge">Visual misdirection (keep-button styled over cancel)</div><p class="quote">&quot;Claim my 50% discount&quot; is a prominent link while &quot;No thanks, I still want to cancel&quot; is a smaller, less prominent link below it.</p><button type="button" data-mark="5" aria-label="Watch it happen: Visual misdirection (keep-button styled over cancel)" hidden>Watch it happen</button></td>
+  <td class="pts">&minus;6</td>
+</tr>
+<tr>
+  <td><div class="charge">Guilt-trip screen</div><p class="quote">&quot;Your watchlist will miss you. You're 2 episodes from finishing Moonrise Protocol. Your 4 saved shows, your viewing history, and your personalized picks will all be gone.&quot;</p><button type="button" data-mark="6" aria-label="Watch it happen: Guilt-trip screen" hidden>Watch it happen</button></td>
+  <td class="pts">&minus;5</td>
+</tr>
+<tr>
+  <td><div class="charge">Confirmshaming button copy</div><p class="quote">&quot;Yes, take it all away from me&quot; - the cancel button is worded to shame the user into keeping the subscription.</p><button type="button" data-mark="7" aria-label="Watch it happen: Confirmshaming button copy" hidden>Watch it happen</button></td>
+  <td class="pts">&minus;6</td>
+</tr>
+<tr>
+  <td><div class="charge">Repeated are-you-sure confirmations</div><p class="quote">&quot;Are you sure you want to give up the things you love?&quot; - another are-you-sure screen after the survey and the discount offer.</p><button type="button" data-mark="8" aria-label="Watch it happen: Repeated are-you-sure confirmations" hidden>Watch it happen</button></td>
+  <td class="pts">&minus;3</td>
+</tr>
+<tr>
+  <td><div class="charge">Artificial waiting or fake processing</div><p class="quote">&quot;Connecting you to a cancellation specialist - Please stay on this page. A specialist is reviewing your account...&quot; - fake wait screen before allowing cancellation to proceed.</p><button type="button" data-mark="9" aria-label="Watch it happen: Artificial waiting or fake processing" hidden>Watch it happen</button></td>
+  <td class="pts">&minus;4</td>
+</tr>
+<tr>
+  <td><div class="charge">Threats of losing grandfathered pricing</div><p class="quote">&quot;You are on a grandfathered plan at $15.99. If you cancel, this price is gone forever. New members pay $22.99 for the same plan.&quot;</p><button type="button" data-mark="10" aria-label="Watch it happen: Threats of losing grandfathered pricing" hidden>Watch it happen</button></td>
+  <td class="pts">&minus;5</td>
+</tr>
+<tr>
+  <td><div class="charge">Repeated are-you-sure confirmations</div><p class="quote">&quot;Are you absolutely sure?&quot; - yet another confirmation screen, the fourth step after survey, discount offer, guilt trip, and artificial delay.</p><button type="button" data-mark="11" aria-label="Watch it happen: Repeated are-you-sure confirmations" hidden>Watch it happen</button></td>
+  <td class="pts">&minus;3</td>
+</tr>
+<tr>
+  <td><div class="charge">5 clicks past the first 3</div></td>
+  <td class="pts">&minus;10</td>
+</tr>
+  </tbody>
+  <tfoot>
+    <tr><td>Starting balance</td><td class="pts">100</td></tr>
+    <tr><td>Total charges</td><td class="pts">&minus;74</td></tr>
+    <tr><td>Escape Score</td><td class="pts grade-F">26</td></tr>
+  </tfoot>
+</table>
+<h2>The agent’s report</h2>
+<p class="report">Successfully cancelled the Streamly+ subscription. Confirmation: &quot;Your Streamly+ membership is now cancelled. You have access until Sep 14, and you will not be billed again. Confirmation code: HC-2481-ESCAPED.&quot; The cancellation flow contained 10 distinct dark patterns: hidden cancellation link buried below retention offers, forced survey requiring a reason before proceeding, two retention offers (pause membership and 50% discount), fake urgency countdown timer on the discount, misdirection with visually dominant keep-subscription buttons, confirmshaming language (&quot;Yes, take it all away from me&quot;), a guilt trip about losing watchlist and unfinished shows, an artificial delay pretending to connect to a &quot;cancellation specialist,&quot; repeated confirmation screens (at least two are-you-sure pages), and a price hike threat warning about losing grandfathered pricing forever.</p>
+<p class="session">Run on Sep 30, 2026. Solari session <code title="AlXrdvAc1jqI3sfy82zXq67_ZDLRKPqFdcmBuv8vppBrK7JYxyBzf8RQGmWFG5Q_zyhfh1l6Qqesk6UnVoryil_V2HuQJELewmwBNvl4GUlBzT4iiY6Pu-LuG-VpJ7VintUusaGHmaKubO-fz4G1DS2f0T8sFkc9KPgrzAjS1MDfh8wKe3vagLRXdHFWF1_0FdrVDprMed3k.AZ8gLHg0TbOo5ptmwN5XhQ">AlXrdvAc1jqI3sfy…</code></p>
+</main>
+<footer class="site wrap">Hotel California cancels subscriptions with an AI agent and scores how hard the company makes it. Every run is against the account owner’s own subscription, and each score reflects what the agent was shown on that date. Built on <a href="https://getsolari.com">Solari</a> cloud browsers and sandboxes, driven by Claude. <a href="https://github.com/IamDejman/hotel-california">Source on GitHub</a>.</footer>
+</body>
+</html>

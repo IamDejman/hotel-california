@@ -36,11 +36,33 @@ export const PATTERN_LABELS: Record<PatternType, string> = {
 const FREE_CLICKS = 3 // a fair flow: account, cancel, confirm
 const FREE_MS = 2 * 60_000
 
+/** One line on the checkout bill: what it cost the customer, in score points. */
+export interface Charge {
+  label: string
+  points: number
+  /** Index into the run's patterns when a dark pattern caused the charge. */
+  pattern?: number
+}
+
+export function charges(metrics: RunMetrics, patterns: PatternSighting[]): Charge[] {
+  const bill: Charge[] = patterns.map((p, i) => ({
+    label: PATTERN_LABELS[p.type],
+    points: PATTERN_WEIGHTS[p.type],
+    pattern: i,
+  }))
+  const extraClicks = Math.max(0, metrics.clicks - FREE_CLICKS)
+  if (extraClicks > 0) {
+    bill.push({ label: `${extraClicks} clicks past the first ${FREE_CLICKS}`, points: extraClicks * 2 })
+  }
+  const extraMinutes = Math.max(0, Math.floor((metrics.durationMs - FREE_MS) / 60_000))
+  if (extraMinutes > 0) {
+    bill.push({ label: `${extraMinutes} min past the first 2`, points: extraMinutes * 3 })
+  }
+  return bill
+}
+
 export function escapeScore(metrics: RunMetrics, patterns: PatternSighting[]): number {
-  let penalty = 0
-  penalty += Math.max(0, metrics.clicks - FREE_CLICKS) * 2
-  penalty += Math.max(0, Math.floor((metrics.durationMs - FREE_MS) / 60_000)) * 3
-  for (const p of patterns) penalty += PATTERN_WEIGHTS[p.type]
+  const penalty = charges(metrics, patterns).reduce((sum, c) => sum + c.points, 0)
   return Math.max(0, Math.min(100, 100 - penalty))
 }
 

@@ -37,6 +37,8 @@ export interface RunMetrics {
 
 export interface RunResult {
   service: string
+  /** Human-readable name for reports; falls back to the service key. */
+  displayName?: string
   /** Residential proxy egress country for this run, or "direct". */
   region: string
   startUrl: string

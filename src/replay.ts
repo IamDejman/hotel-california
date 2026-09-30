@@ -1,6 +1,6 @@
 /**
- * Download the rrweb session replay: the receipt that proves what the flow
- * actually did. Uploads land asynchronously after release, so poll patiently.
+ * Download the rrweb session replay: the receipt that proves what the flow did.
+ * Uploads land asynchronously after release, so poll patiently.
  */
 import { writeFile, mkdir } from "node:fs/promises"
 import path from "node:path"
@@ -20,7 +20,9 @@ export async function downloadReplay(
       const blob = await sessions.downloadReplay(sessionId)
       await mkdir("replays", { recursive: true })
       const file = path.join("replays", `${service}-${sessionId}.ndjson`)
-      await writeFile(file, Buffer.from(blob as ArrayBuffer))
+      // Drop sandbox preview tokens from recorded URLs before the replay is published.
+      const events = Buffer.from(blob as ArrayBuffer).toString("utf8")
+      await writeFile(file, events.replace(/[?&]pt_token=[A-Za-z0-9_.-]+/g, ""))
       return file
     } catch (err) {
       const status = (err as { status?: number }).status

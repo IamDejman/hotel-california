@@ -18,6 +18,7 @@ import { buildLeaderboard } from "./report.js"
 import type { RunResult } from "./types.js"
 
 interface ServiceConfig {
+  name?: string
   startUrl: string
   profile?: string
   proxy?: string
@@ -53,7 +54,11 @@ let gym: GymDeployment | null = null
 let config: ServiceConfig
 if (serviceName === "gym") {
   gym = await deployGym(apiKey)
-  config = { startUrl: `${gym.url.replace(/\/$/, "")}/index.html` }
+  // The preview URL carries its access token in the query string, so append
+  // the page to the path rather than to the end of the string.
+  const start = new URL(gym.url)
+  start.pathname = `${start.pathname.replace(/\/$/, "")}/index.html`
+  config = { name: "Streamly+ (practice gym)", startUrl: start.toString() }
 } else {
   const registry = JSON.parse(await readFile("services.json", "utf8")) as Record<
     string,
@@ -68,6 +73,9 @@ if (serviceName === "gym") {
 }
 
 const solari = new Solari({ apiKey })
+
+// Sandbox preview URLs carry an access token; keep it out of published results.
+const stripPreviewToken = (url: string): string => url.replace(/[?&]pt_token=[^&"]*/g, "")
 
 async function runOnce(region: string | null): Promise<RunResult> {
   const started = Date.now()
@@ -117,8 +125,9 @@ async function runOnce(region: string | null): Promise<RunResult> {
 
   return {
     service,
+    displayName: config.name ?? service,
     region: regionLabel,
-    startUrl: config.startUrl,
+    startUrl: stripPreviewToken(config.startUrl),
     ranAt: new Date().toISOString(),
     outcome: run.outcome,
     summary: run.summary,

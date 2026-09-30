@@ -11,7 +11,13 @@ with a DOM-level session replay of every run as the receipt.
 Built on [Solari](https://getsolari.com) cloud browsers and sandboxes, driven
 by [Claude](https://www.anthropic.com).
 
-## Who actually needs this
+**[Watch the replays](https://iamdejman.github.io/hotel-california/)**: the
+agent's first checkout, from the Streamly+ practice gym, scored **26/100
+(grade F)** with 12 dark patterns on the bill.
+
+[![Hotel California: Streamly+ scored 26/100, grade F](site/og.png)](https://iamdejman.github.io/hotel-california/runs/gym.html)
+
+## Who needs this
 
 The leaderboard is the hook; the workflows underneath are ones people already
 pay for:
@@ -85,10 +91,13 @@ cancel link, a mandatory survey, a 50% retention offer with a fake countdown,
 a guilt screen, confirmshamed buttons, a fake "specialist" wait, and a final
 grandfathered-price threat.
 
+Requires Node 22 or newer.
+
 ```bash
 npm install
 cp .env.example .env   # add SOLARI_API_KEY and ANTHROPIC_API_KEY
 npm start -- gym
+npm run site           # open site/index.html
 ```
 
 What happens, all on one Solari key:
@@ -102,16 +111,25 @@ What happens, all on one Solari key:
 4. You get the score, the pattern list with quoted evidence, the JSON result,
    and the replay file.
 
-Example output:
+Output from the published run (quotes trimmed):
 
 ```
   outcome : cancelled
-  escape score : 42/100 (grade D)
-  dark patterns : 8
-    - hidden_path: "Cancel is a tiny footer link labelled Membership settings"
-    - retention_offer: "50% off for 3 months, expires in 4:59"
+  escape score : 26/100 (grade F)
+  dark patterns : 12
+    - hidden_path: "continue to membership cancellation" buried at the very bottom
+    - retention_offer: "Pause your membership for up to 3 months"
+    - forced_survey: "We can't continue until you tell us why you're thinking of leaving."
+    - retention_offer: "50% off for 3 months"
+    - fake_urgency: "This one-time offer expires in 4:57"
+    - misdirection: "Claim my 50% discount" is the prominent button
+    - guilt_trip: "Your watchlist will miss you."
     - confirmshaming: "Yes, take it all away from me"
-    ...
+    - repeated_confirmation: "Are you sure you want to give up the things you love?"
+    - artificial_delay: "Connecting you to a cancellation specialist."
+    - price_hike_threat: "If you cancel, this price is gone forever."
+    - repeated_confirmation: "Are you absolutely sure?"
+  clicks 8, pages 8, 115s
 ```
 
 ## Scoring a real service
@@ -132,12 +150,13 @@ npm start -- your-service
 
 ## The Replay Theater
 
-`npm run site` builds a static site in `site/` where every run is a scorecard
-with the **session replay embedded**, and every dark pattern the agent recorded
-is a **red marker pinned to the replay timeline**. Click a piece of evidence
-and the player jumps to the exact moment the agent was hit with it. Publish
-`site/` on GitHub Pages and the leaderboard becomes something people can watch,
-not just read.
+`npm run site` builds a static site in `site/`. Every run gets a **checkout
+bill**: each dark pattern is an itemized charge against a starting balance of
+100, so the Escape Score shows its working. Above the bill sits the **session
+replay**, with a red marker on the timeline for every charge. Press "Watch it
+happen" on any line and the player jumps to that moment. Set `SITE_URL` when
+building for a public host to add link-preview tags, then publish `site/` on
+GitHub Pages.
 
 ## The jurisdiction experiment
 
@@ -175,6 +194,7 @@ src/agent.ts    the Claude loop and its tools (click, type, record_pattern, fini
 src/browser.ts  page observation: tagged interactive elements + text digest
 src/score.ts    the Escape Score rubric
 src/gym.ts      deploys the gym into a Solari sandbox with a public URL
+src/results.ts  loads results/*.json, worst score first
 src/report.ts   builds LEADERBOARD.md from results/*.json
 src/compare.ts  builds the per-region compliance finding in reports/
 src/site.ts     builds the Replay Theater static site in site/

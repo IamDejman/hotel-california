@@ -21,16 +21,22 @@ export async function deployGym(apiKey: string): Promise<GymDeployment> {
   try {
     await sandbox.connect()
     const gymDir = path.join(process.cwd(), "gym")
+    // Inline the stylesheet so the session replay keeps the styling after the
+    // sandbox (and its style.css) is gone. Visual misdirection is a scored pattern.
+    const css = await readFile(path.join(gymDir, "style.css"), "utf8")
     for (const file of await readdir(gymDir)) {
       const content = await readFile(path.join(gymDir, file), "utf8")
-      await sandbox.files.write(`/tmp/gym/${file}`, content)
+      const served = file.endsWith(".html")
+        ? content.replace('<link rel="stylesheet" href="style.css">', `<style>${css}</style>`)
+        : content
+      await sandbox.files.write(`/tmp/gym/${file}`, served)
     }
     await sandbox.commands.run("sh", {
       args: ["-c", `cd /tmp/gym && nohup python3 -m http.server ${PORT} >/dev/null 2>&1 &`],
     })
     const { url } = await sandbox.previewUrl(PORT)
 
-    // Wait until the preview actually serves before pointing an agent at it.
+    // Wait until the preview serves before pointing an agent at it.
     for (let i = 0; i < 15; i++) {
       await new Promise((r) => setTimeout(r, 1000))
       try {

@@ -5,22 +5,17 @@
  *
  *   npm run compare -- <service>
  */
-import { readFile, readdir, writeFile, mkdir } from "node:fs/promises"
+import { writeFile, mkdir } from "node:fs/promises"
 import path from "node:path"
+import { loadResults } from "./results.js"
 import { PATTERN_LABELS } from "./score.js"
-import type { PatternType, RunResult } from "./types.js"
+import type { PatternType } from "./types.js"
 
 export async function buildRegionReport(service: string): Promise<void> {
-  const files = (await readdir("results")).filter(
-    (f) => f.startsWith(`${service}@`) && f.endsWith(".json"),
-  )
-  if (files.length < 2) {
+  const runs = (await loadResults()).filter((r) => r.service === service && r.region !== "direct")
+  if (runs.length < 2) {
     console.error(`Need at least two ${service}@<region>.json results to compare.`)
     return
-  }
-  const runs: RunResult[] = []
-  for (const f of files) {
-    runs.push(JSON.parse(await readFile(path.join("results", f), "utf8")) as RunResult)
   }
   runs.sort((a, b) => a.region.localeCompare(b.region))
 
