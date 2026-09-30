@@ -5,7 +5,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "tsx src/index.ts",
+    "start": "tsx --env-file-if-exists=.env src/index.ts",
     "gym:local": "python3 -m http.server 4321 -d gym",
     "leaderboard": "tsx src/report.ts",
     "site": "tsx src/site.ts",

@@ -135,7 +135,7 @@ export async function runEscape(page: AgentPage, startUrl: string): Promise<Agen
     run.agentSteps++
     const stream = client.messages.stream({
       model: MODEL,
-      max_tokens: 2048,
+      max_tokens: 16000,
       thinking: { type: "adaptive" },
       system: SYSTEM,
       tools: TOOLS,
