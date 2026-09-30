@@ -73,9 +73,11 @@ h2 { font-size: 20px; margin: 36px 0 12px; }
 .bill button:hover { border-color: var(--brass); }
 .bill tfoot td { border-bottom: 0; padding-top: 10px; }
 .bill tfoot tr:last-child td { border-top: 2px solid var(--ivory); padding-top: 14px; font-size: 20px; font-weight: 700; }
-.report { color: var(--muted); max-width: 65ch; }
-.session { color: var(--muted); font-size: 13px; margin-top: 24px; overflow-wrap: anywhere; }
-footer.site { color: var(--muted); font-size: 13px; padding: 48px 0; }
+.report { margin-top: 32px; color: var(--muted); }
+.report summary { cursor: pointer; color: var(--ivory); font-weight: 600; }
+.report p { margin-top: 10px; max-width: 65ch; }
+.session { font-size: 13px; overflow-wrap: anywhere; }
+footer.site { color: var(--muted); font-size: 13px; padding-block: 48px; }
 @media (max-width: 520px) { .register a { grid-template-columns: 72px 1fr; gap: 14px; } .register .score { font-size: 38px; } }
 </style>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
@@ -95,7 +97,6 @@ footer.site { color: var(--muted); font-size: 13px; padding: 48px 0; }
 </header>
 <section class="player-shell" aria-label="Session replay">
   <div id="player"></div>
-  <p class="player-note">DOM-level replay recorded by the Solari cloud browser. Each tick on the timeline marks a charge on the bill.</p>
 </section>
 <script type="application/json" id="run-data">{"replay":"../replays/gym.ndjson","marks":[{"atMs":1790800207652,"label":"Hidden cancellation path"},{"atMs":1790800211179,"label":"Retention offer wall"},{"atMs":1790800221272,"label":"Mandatory exit survey"},{"atMs":1790800238549,"label":"Retention offer wall"},{"atMs":1790800241314,"label":"Fake urgency or countdown"},{"atMs":1790800244032,"label":"Visual misdirection (keep-button styled over cancel)"},{"atMs":1790800255643,"label":"Guilt-trip screen"},{"atMs":1790800258652,"label":"Confirmshaming button copy"},{"atMs":1790800262395,"label":"Repeated are-you-sure confirmations"},{"atMs":1790800272102,"label":"Artificial waiting or fake processing"},{"atMs":1790800282131,"label":"Threats of losing grandfathered pricing"},{"atMs":1790800286473,"label":"Repeated are-you-sure confirmations"}]}</script>
 <script src="https://cdn.jsdelivr.net/npm/rrweb-player@1.0.0-alpha.4/dist/index.js"></script>
@@ -162,51 +163,51 @@ boot().catch((err) => {
   <thead><tr><th scope="col">Charge</th><th scope="col" class="pts">Points</th></tr></thead>
   <tbody>
 <tr>
-  <td><div class="charge">Hidden cancellation path</div><p class="quote">The cancellation link &quot;continue to membership cancellation&quot; is buried at the bottom of the page, below pause and plan switch offers, as a small text link.</p><button type="button" data-mark="0" aria-label="Watch it happen: Hidden cancellation path" hidden>Watch it happen</button></td>
+  <td><div class="charge">Hidden cancellation path</div><p class="quote">“continue to membership cancellation”</p><button type="button" data-mark="0" aria-label="Watch: Hidden cancellation path" hidden>Watch</button></td>
   <td class="pts">&minus;8</td>
 </tr>
 <tr>
-  <td><div class="charge">Retention offer wall</div><p class="quote">&quot;Pause your membership for up to 3 months. Keep your profile, watchlist, and grandfathered price.&quot; and &quot;Standard with ads is only $6.99 a month.&quot; offered before cancellation link.</p><button type="button" data-mark="1" aria-label="Watch it happen: Retention offer wall" hidden>Watch it happen</button></td>
+  <td><div class="charge">Retention offer wall</div><p class="quote">“Pause your membership for up to 3 months. Keep your profile, watchlist, and grandfathered price.”</p><button type="button" data-mark="1" aria-label="Watch: Retention offer wall" hidden>Watch</button></td>
   <td class="pts">&minus;8</td>
 </tr>
 <tr>
-  <td><div class="charge">Mandatory exit survey</div><p class="quote">&quot;We can't continue until you tell us why you're thinking of leaving.&quot; - must select a reason to continue cancellation.</p><button type="button" data-mark="2" aria-label="Watch it happen: Mandatory exit survey" hidden>Watch it happen</button></td>
+  <td><div class="charge">Mandatory exit survey</div><p class="quote">“We can't continue until you tell us why you're thinking of leaving.”</p><button type="button" data-mark="2" aria-label="Watch: Mandatory exit survey" hidden>Watch</button></td>
   <td class="pts">&minus;4</td>
 </tr>
 <tr>
-  <td><div class="charge">Retention offer wall</div><p class="quote">&quot;50% off for 3 months - Keep everything you love for just $7.99 a month.&quot;</p><button type="button" data-mark="3" aria-label="Watch it happen: Retention offer wall" hidden>Watch it happen</button></td>
+  <td><div class="charge">Retention offer wall</div><p class="quote">“50% off for 3 months - Keep everything you love for just $7.99 a month.”</p><button type="button" data-mark="3" aria-label="Watch: Retention offer wall" hidden>Watch</button></td>
   <td class="pts">&minus;8</td>
 </tr>
 <tr>
-  <td><div class="charge">Fake urgency or countdown</div><p class="quote">&quot;This one-time offer expires in 4:57&quot; - countdown timer to pressure user into accepting the discount.</p><button type="button" data-mark="4" aria-label="Watch it happen: Fake urgency or countdown" hidden>Watch it happen</button></td>
+  <td><div class="charge">Fake urgency or countdown</div><p class="quote">“This one-time offer expires in 4:57”</p><button type="button" data-mark="4" aria-label="Watch: Fake urgency or countdown" hidden>Watch</button></td>
   <td class="pts">&minus;4</td>
 </tr>
 <tr>
-  <td><div class="charge">Visual misdirection (keep-button styled over cancel)</div><p class="quote">&quot;Claim my 50% discount&quot; is a prominent link while &quot;No thanks, I still want to cancel&quot; is a smaller, less prominent link below it.</p><button type="button" data-mark="5" aria-label="Watch it happen: Visual misdirection (keep-button styled over cancel)" hidden>Watch it happen</button></td>
+  <td><div class="charge">Visual misdirection (keep-button styled over cancel)</div><p class="quote">“Claim my 50% discount”</p><button type="button" data-mark="5" aria-label="Watch: Visual misdirection (keep-button styled over cancel)" hidden>Watch</button></td>
   <td class="pts">&minus;6</td>
 </tr>
 <tr>
-  <td><div class="charge">Guilt-trip screen</div><p class="quote">&quot;Your watchlist will miss you. You're 2 episodes from finishing Moonrise Protocol. Your 4 saved shows, your viewing history, and your personalized picks will all be gone.&quot;</p><button type="button" data-mark="6" aria-label="Watch it happen: Guilt-trip screen" hidden>Watch it happen</button></td>
+  <td><div class="charge">Guilt-trip screen</div><p class="quote">“Your watchlist will miss you. You're 2 episodes from finishing Moonrise Protocol. Your 4 saved shows, your viewing history, and your personalized picks will all be gone.”</p><button type="button" data-mark="6" aria-label="Watch: Guilt-trip screen" hidden>Watch</button></td>
   <td class="pts">&minus;5</td>
 </tr>
 <tr>
-  <td><div class="charge">Confirmshaming button copy</div><p class="quote">&quot;Yes, take it all away from me&quot; - the cancel button is worded to shame the user into keeping the subscription.</p><button type="button" data-mark="7" aria-label="Watch it happen: Confirmshaming button copy" hidden>Watch it happen</button></td>
+  <td><div class="charge">Confirmshaming button copy</div><p class="quote">“Yes, take it all away from me”</p><button type="button" data-mark="7" aria-label="Watch: Confirmshaming button copy" hidden>Watch</button></td>
   <td class="pts">&minus;6</td>
 </tr>
 <tr>
-  <td><div class="charge">Repeated are-you-sure confirmations</div><p class="quote">&quot;Are you sure you want to give up the things you love?&quot; - another are-you-sure screen after the survey and the discount offer.</p><button type="button" data-mark="8" aria-label="Watch it happen: Repeated are-you-sure confirmations" hidden>Watch it happen</button></td>
+  <td><div class="charge">Repeated are-you-sure confirmations</div><p class="quote">“Are you sure you want to give up the things you love?”</p><button type="button" data-mark="8" aria-label="Watch: Repeated are-you-sure confirmations" hidden>Watch</button></td>
   <td class="pts">&minus;3</td>
 </tr>
 <tr>
-  <td><div class="charge">Artificial waiting or fake processing</div><p class="quote">&quot;Connecting you to a cancellation specialist - Please stay on this page. A specialist is reviewing your account...&quot; - fake wait screen before allowing cancellation to proceed.</p><button type="button" data-mark="9" aria-label="Watch it happen: Artificial waiting or fake processing" hidden>Watch it happen</button></td>
+  <td><div class="charge">Artificial waiting or fake processing</div><p class="quote">“Connecting you to a cancellation specialist - Please stay on this page. A specialist is reviewing your account...”</p><button type="button" data-mark="9" aria-label="Watch: Artificial waiting or fake processing" hidden>Watch</button></td>
   <td class="pts">&minus;4</td>
 </tr>
 <tr>
-  <td><div class="charge">Threats of losing grandfathered pricing</div><p class="quote">&quot;You are on a grandfathered plan at $15.99. If you cancel, this price is gone forever. New members pay $22.99 for the same plan.&quot;</p><button type="button" data-mark="10" aria-label="Watch it happen: Threats of losing grandfathered pricing" hidden>Watch it happen</button></td>
+  <td><div class="charge">Threats of losing grandfathered pricing</div><p class="quote">“You are on a grandfathered plan at $15.99. If you cancel, this price is gone forever. New members pay $22.99 for the same plan.”</p><button type="button" data-mark="10" aria-label="Watch: Threats of losing grandfathered pricing" hidden>Watch</button></td>
   <td class="pts">&minus;5</td>
 </tr>
 <tr>
-  <td><div class="charge">Repeated are-you-sure confirmations</div><p class="quote">&quot;Are you absolutely sure?&quot; - yet another confirmation screen, the fourth step after survey, discount offer, guilt trip, and artificial delay.</p><button type="button" data-mark="11" aria-label="Watch it happen: Repeated are-you-sure confirmations" hidden>Watch it happen</button></td>
+  <td><div class="charge">Repeated are-you-sure confirmations</div><p class="quote">“Are you absolutely sure?”</p><button type="button" data-mark="11" aria-label="Watch: Repeated are-you-sure confirmations" hidden>Watch</button></td>
   <td class="pts">&minus;3</td>
 </tr>
 <tr>
@@ -220,10 +221,12 @@ boot().catch((err) => {
     <tr><td>Escape Score</td><td class="pts grade-F">26</td></tr>
   </tfoot>
 </table>
-<h2>The agent’s report</h2>
-<p class="report">Successfully cancelled the Streamly+ subscription. Confirmation: &quot;Your Streamly+ membership is now cancelled. You have access until Sep 14, and you will not be billed again. Confirmation code: HC-2481-ESCAPED.&quot; The cancellation flow contained 10 distinct dark patterns: hidden cancellation link buried below retention offers, forced survey requiring a reason before proceeding, two retention offers (pause membership and 50% discount), fake urgency countdown timer on the discount, misdirection with visually dominant keep-subscription buttons, confirmshaming language (&quot;Yes, take it all away from me&quot;), a guilt trip about losing watchlist and unfinished shows, an artificial delay pretending to connect to a &quot;cancellation specialist,&quot; repeated confirmation screens (at least two are-you-sure pages), and a price hike threat warning about losing grandfathered pricing forever.</p>
-<p class="session">Run on Sep 30, 2026. Solari session <code title="AlXrdvAc1jqI3sfy82zXq67_ZDLRKPqFdcmBuv8vppBrK7JYxyBzf8RQGmWFG5Q_zyhfh1l6Qqesk6UnVoryil_V2HuQJELewmwBNvl4GUlBzT4iiY6Pu-LuG-VpJ7VintUusaGHmaKubO-fz4G1DS2f0T8sFkc9KPgrzAjS1MDfh8wKe3vagLRXdHFWF1_0FdrVDprMed3k.AZ8gLHg0TbOo5ptmwN5XhQ">AlXrdvAc1jqI3sfy…</code></p>
+<details class="report">
+  <summary>Agent’s report</summary>
+  <p>Successfully cancelled the Streamly+ subscription. Confirmation: &quot;Your Streamly+ membership is now cancelled. You have access until Sep 14, and you will not be billed again. Confirmation code: HC-2481-ESCAPED.&quot; The cancellation flow contained 10 distinct dark patterns: hidden cancellation link buried below retention offers, forced survey requiring a reason before proceeding, two retention offers (pause membership and 50% discount), fake urgency countdown timer on the discount, misdirection with visually dominant keep-subscription buttons, confirmshaming language (&quot;Yes, take it all away from me&quot;), a guilt trip about losing watchlist and unfinished shows, an artificial delay pretending to connect to a &quot;cancellation specialist,&quot; repeated confirmation screens (at least two are-you-sure pages), and a price hike threat warning about losing grandfathered pricing forever.</p>
+  <p class="session">Sep 30, 2026, Solari session <code title="AlXrdvAc1jqI3sfy82zXq67_ZDLRKPqFdcmBuv8vppBrK7JYxyBzf8RQGmWFG5Q_zyhfh1l6Qqesk6UnVoryil_V2HuQJELewmwBNvl4GUlBzT4iiY6Pu-LuG-VpJ7VintUusaGHmaKubO-fz4G1DS2f0T8sFkc9KPgrzAjS1MDfh8wKe3vagLRXdHFWF1_0FdrVDprMed3k.AZ8gLHg0TbOo5ptmwN5XhQ">AlXrdvAc1jqI3sfy…</code></p>
+</details>
 </main>
-<footer class="site wrap">Hotel California cancels subscriptions with an AI agent and scores how hard the company makes it. Every run is against the account owner’s own subscription, and each score reflects what the agent was shown on that date. Built on <a href="https://getsolari.com">Solari</a> cloud browsers and sandboxes, driven by Claude. <a href="https://github.com/IamDejman/hotel-california">Source on GitHub</a>.</footer>
+<footer class="site wrap">Runs use the owner’s own subscriptions. Built on <a href="https://getsolari.com">Solari</a> and Claude. <a href="https://github.com/IamDejman/hotel-california">Source</a></footer>
 </body>
 </html>

@@ -147,7 +147,11 @@ export async function runEscape(page: AgentPage, startUrl: string): Promise<Agen
     const toolUses = response.content.filter(
       (b): b is Anthropic.ToolUseBlock => b.type === "tool_use",
     )
-    if (toolUses.length === 0) break
+    if (toolUses.length === 0) {
+      // A turn without an action is not a result; ask for one instead of giving up.
+      messages.push({ role: "user", content: "Take the next action with a tool, or call finish." })
+      continue
+    }
 
     const results: Anthropic.ToolResultBlockParam[] = []
     let finished = false
