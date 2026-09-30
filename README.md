@@ -79,7 +79,8 @@ Every run starts at 100 and bleeds points for friction:
 | Each minute past the second | -3 |
 
 90+ is an A: they let you go like adults. Under 40 is an F: welcome to the
-Hotel California. A run that ends in "call us to cancel" is an automatic F.
+Hotel California. A run that never gets out, whether it hits "call us to cancel",
+a CAPTCHA, or a dead end, is an automatic F.
 
 Results land in [`LEADERBOARD.md`](LEADERBOARD.md).
 
@@ -133,6 +134,14 @@ Output from the published run (quotes trimmed):
 ```
 
 ## Scoring a real service
+
+For a page that needs no login, pass its URL:
+
+```bash
+npm start -- https://your-site.com/account
+```
+
+For a page behind a login:
 
 1. Add the service to `services.json` with the account page URL and a profile
    name.

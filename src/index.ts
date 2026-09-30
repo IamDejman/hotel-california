@@ -4,6 +4,7 @@
  *
  *   npm start -- gym                          attack the bundled Streamly+ dark-pattern gym
  *   npm start -- <service>                    attack a service from services.json (your own account)
+ *   npm start -- https://example.com/account  attack any page directly, no services.json entry
  *   npm start -- <service> --regions us,gb,de run the same flow through residential egress in
  *                                             each country and compare what each one is shown
  */
@@ -38,10 +39,20 @@ if (!process.env.ANTHROPIC_API_KEY) {
 const args = process.argv.slice(2)
 const serviceName = args.find((a) => !a.startsWith("--"))
 if (!serviceName) {
-  console.error("Usage: npm start -- <service|gym> [--regions us,gb,de]")
+  console.error("Usage: npm start -- <service|gym|url> [--regions us,gb,de]")
   process.exit(1)
 }
-const service: string = serviceName
+let startUrl: URL | null = null
+if (/^https?:\/\//i.test(serviceName)) {
+  try {
+    startUrl = new URL(serviceName)
+  } catch {
+    console.error(`Not a valid URL: ${serviceName}`)
+    process.exit(1)
+  }
+}
+// A bare URL is named by its hostname, which also names its results and replay files.
+const service: string = startUrl ? startUrl.hostname.replace(/^www\./, "") : serviceName
 const regionsFlag = args.find((a) => a.startsWith("--regions"))
 const regions = regionsFlag
   ? (regionsFlag.split("=")[1] ?? args[args.indexOf(regionsFlag) + 1] ?? "")
@@ -59,6 +70,8 @@ if (serviceName === "gym") {
   const start = new URL(gym.url)
   start.pathname = `${start.pathname.replace(/\/$/, "")}/index.html`
   config = { name: "Streamly+ (practice gym)", startUrl: start.toString() }
+} else if (startUrl) {
+  config = { name: service, startUrl: startUrl.toString() }
 } else {
   const registry = JSON.parse(await readFile("services.json", "utf8")) as Record<
     string,
@@ -163,6 +176,7 @@ for (const result of results) {
   console.log("")
   console.log(`  region : ${result.region}`)
   console.log(`  outcome : ${result.outcome}`)
+  if (result.outcome !== "cancelled") console.log(`  reason : ${result.summary}`)
   console.log(`  escape score : ${result.score}/100 (grade ${result.grade})`)
   console.log(`  dark patterns : ${result.patterns.length}`)
   for (const p of result.patterns) console.log(`    - ${p.type}: ${p.evidence.slice(0, 90)}`)
