@@ -37,6 +37,9 @@ header.site { padding: 64px 0 32px; }
 header.site p { color: var(--muted); max-width: 60ch; margin-top: 12px; font-size: 18px; text-wrap: pretty; }
 .cta { display: inline-block; margin-top: 24px; background: var(--text); color: var(--bg); padding: 10px 18px; border-radius: 8px; font-weight: 600; text-decoration: none; }
 .cta:hover { opacity: 0.85; }
+header.site .alt { font-size: 15px; margin-top: 14px; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 .back { display: inline-block; margin-bottom: 20px; font-size: 14px; }
 h1.run { font-size: 30px; line-height: 1.2; letter-spacing: -0.01em; text-wrap: balance; overflow-wrap: anywhere; }
 h2 { font-size: 18px; margin: 48px 0 12px; }
@@ -53,7 +56,7 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0
 .register a:hover { background: var(--panel); }
 .register .score { font-size: 40px; font-weight: 700; line-height: 1; letter-spacing: -0.02em; }
 .register .grade { font-size: 13px; color: var(--muted); margin-top: 6px; }
-.register h2 { font-size: 18px; margin: 0; overflow-wrap: anywhere; }
+.register h3 { font-size: 18px; margin: 0; overflow-wrap: anywhere; }
 .register p { color: var(--muted); font-size: 14px; margin-top: 4px; }
 .register .go { display: inline-block; margin-top: 8px; font-size: 14px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
 .grade-A, .grade-B { color: var(--good); }
@@ -230,7 +233,7 @@ function indexPage(results: RunResult[]): string {
       return `<li><a href="runs/${esc(slugOf(r))}.html">
   <div><div class="score num grade-${r.grade}">${r.score}</div><div class="grade">Grade ${r.grade}</div></div>
   <div>
-    <h2>${esc(nameOf(r))}${esc(regionSuffix(r))}</h2>
+    <h3>${esc(nameOf(r))}${esc(regionSuffix(r))}</h3>
     <p>${OUTCOME_LABELS[r.outcome]}. ${r.patterns.length} dark patterns in ${seconds(r)}s.</p>
     <span class="go">Watch the replay and see the bill</span>
   </div>
@@ -238,12 +241,25 @@ function indexPage(results: RunResult[]): string {
     })
     .join("\n")
   const top = results[0]
-  const cta = top ? `\n  <a class="cta" href="runs/${esc(slugOf(top))}.html">Watch the agent try to cancel</a>` : ""
+  const watch = top ? `\n  <p class="alt">Or <a href="runs/${esc(slugOf(top))}.html">watch a run first</a>.</p>` : ""
   const body = `<header class="site">
   <h1 class="title">Hotel California</h1>
-  <p>We send an AI agent to cancel a subscription and score how hard the company makes it to leave.</p>${cta}
+  <p>We send an AI agent to cancel a subscription and score how hard the company makes it to leave.</p>
+  <a class="cta" href="#run">Run it yourself</a>${watch}
 </header>
-${rows ? `<ol class="register">${rows}</ol>` : `<p class="prose">No runs yet. Run <code>npm start -- gym</code> to score the practice gym, then <code>npm run site</code>.</p>`}
+<section id="run">
+  <h2>Run it yourself</h2>
+  <p class="prose">You need Node 22 or newer, a Solari API key and an Anthropic API key.</p>
+  <pre><code>git clone https://github.com/IamDejman/hotel-california
+cd hotel-california
+npm install
+cp .env.example .env   # add both keys
+npm start -- gym       # scores the practice site
+npm run site           # open site/index.html</code></pre>
+  <p class="prose">To test your own cancel page, pass its URL:</p>
+  <pre><code>npm start -- https://your-site.com/account</code></pre>
+  <p class="prose">If the page needs a login, save a Solari login profile first. The <a href="https://github.com/IamDejman/hotel-california#readme">README</a> shows how.</p>
+</section>
 <section>
   <h2>How it works</h2>
   <ol class="steps">
@@ -255,15 +271,8 @@ ${rows ? `<ol class="register">${rows}</ol>` : `<p class="prose">No runs yet. Ru
   </ol>
 </section>
 <section>
-  <h2>Run it yourself</h2>
-  <p class="prose">You need Node 22 or newer, a Solari API key and an Anthropic API key.</p>
-  <pre><code>git clone https://github.com/IamDejman/hotel-california
-cd hotel-california
-npm install
-cp .env.example .env   # add both keys
-npm start -- gym
-npm run site</code></pre>
-  <p class="prose">To score a service you pay for, follow the <a href="https://github.com/IamDejman/hotel-california#readme">README</a>.</p>
+  <h2>Results</h2>
+  ${rows ? `<ol class="register">${rows}</ol>` : `<p class="prose">No runs yet.</p>`}
 </section>`
   return shell({
     title: "Hotel California: the Cancellation Difficulty Index",
