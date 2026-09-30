@@ -3,67 +3,95 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Hotel California: Cancellation Difficulty Index</title>
+<meta name="theme-color" content="#2b1216">
+<title>Hotel California: the Cancellation Difficulty Index</title>
+<meta name="description" content="An AI agent cancels subscriptions, bills companies for every dark pattern on the way out, and keeps the replay as the receipt.">
+<meta property="og:title" content="Hotel California: the Cancellation Difficulty Index">
+<meta property="og:description" content="An AI agent cancels subscriptions, bills companies for every dark pattern on the way out, and keeps the replay as the receipt.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://iamdejman.github.io/hotel-california/">
+<meta property="og:image" content="https://iamdejman.github.io/hotel-california/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Limelight&display=swap">
 <style>
 * { margin: 0; box-sizing: border-box; }
 :root {
-  --bg: #0b0a14; --panel: #14121f; --line: #262336; --text: #ece9f4;
-  --muted: #9d97b5; --accent: #e8b44c; --good: #4ade80; --mid: #facc15; --bad: #f87171;
+  color-scheme: dark;
+  --lobby: #2b1216; --panel: #371a1f; --line: #57303a; --ivory: #f3eadb;
+  --muted: #c3aa9f; --brass: #d4ad62; --good: #a6dcae; --mid: #eccb74; --bad: #ff9a86;
+  --marquee: "Limelight", Georgia, serif;
 }
-body { background: var(--bg); color: var(--text); font-family: -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.55; }
-a { color: var(--accent); }
-.wrap { max-width: 880px; margin: 0 auto; padding: 24px; }
-header.site { padding: 56px 0 32px; }
-header.site h1 { font-size: 34px; letter-spacing: -0.5px; }
-header.site p { color: var(--muted); max-width: 60ch; margin-top: 8px; }
-.eyebrow { color: var(--accent); font-size: 12px; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; }
-.card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 22px; margin-bottom: 16px; display: flex; gap: 20px; align-items: center; text-decoration: none; color: var(--text); }
-.card:hover { border-color: var(--accent); }
-.score { font-size: 40px; font-weight: 800; min-width: 92px; text-align: center; }
+body { background: var(--lobby); color: var(--ivory); font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+a { color: var(--brass); text-underline-offset: 3px; }
+a:hover { color: var(--ivory); }
+:focus-visible { outline: 2px solid var(--brass); outline-offset: 3px; border-radius: 4px; }
+.wrap { max-width: 760px; margin: 0 auto; padding: 0 16px; }
+header.site { padding: 56px 0 28px; }
+.marquee { font-family: var(--marquee); font-weight: 400; font-size: clamp(40px, 9vw, 64px); line-height: 1.05; color: var(--brass); text-wrap: balance; }
+header.site p { color: var(--muted); max-width: 60ch; margin-top: 12px; text-wrap: pretty; }
+.back { display: inline-block; margin-bottom: 20px; font-size: 14px; }
+h1.run { font-size: 30px; line-height: 1.2; text-wrap: balance; }
+h2 { font-size: 20px; margin: 36px 0 12px; }
+.num { font-variant-numeric: tabular-nums; }
+
+.register { list-style: none; padding: 0; border-top: 1px solid var(--line); }
+.register a { display: grid; grid-template-columns: 96px 1fr; gap: 20px; padding: 22px 8px; border-bottom: 1px solid var(--line); color: var(--ivory); text-decoration: none; }
+.register a:hover { background: var(--panel); }
+.register .score { font-family: var(--marquee); font-size: 48px; line-height: 1; }
+.register .grade { font-size: 14px; color: var(--muted); margin-top: 6px; }
+.register h3 { font-size: 19px; }
+.register p { color: var(--muted); font-size: 14px; margin-top: 4px; }
 .grade-A, .grade-B { color: var(--good); }
 .grade-C, .grade-D { color: var(--mid); }
 .grade-F { color: var(--bad); }
-.card .meta { flex: 1; }
-.card h2 { font-size: 19px; }
-.card .sub { color: var(--muted); font-size: 13px; margin-top: 2px; }
-.chips { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
-.chip { font-size: 11px; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
-.chip.dark { border-color: #7f1d1d; color: #fca5a5; }
-.stats { display: flex; gap: 24px; margin: 18px 0 26px; flex-wrap: wrap; }
-.stat .n { font-size: 26px; font-weight: 800; }
-.stat .l { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
-.player-shell { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin: 20px 0; }
-#player { overflow: hidden; border-radius: 10px; }
-.rr-player { max-width: 100%; }
-.player-note { color: var(--muted); font-size: 13px; margin-top: 10px; }
-.evidence { list-style: none; }
-.evidence li { border-left: 3px solid var(--accent); padding: 8px 14px; margin-bottom: 10px; background: var(--panel); border-radius: 0 10px 10px 0; }
-.evidence .t { font-weight: 700; font-size: 14px; }
-.evidence .q { color: var(--muted); font-size: 13px; }
-.evidence button { background: none; border: 0; color: var(--accent); cursor: pointer; font-size: 12px; padding: 0; text-decoration: underline; }
-.marker { position: absolute; top: -3px; width: 6px; height: 12px; background: var(--bad); border-radius: 2px; cursor: pointer; z-index: 5; }
+
+.facts { display: flex; flex-wrap: wrap; gap: 12px 32px; margin: 20px 0 8px; }
+.facts dt { font-size: 13px; color: var(--muted); }
+.facts dd { font-size: 22px; font-weight: 700; }
+.facts .score dd { font-family: var(--marquee); font-weight: 400; font-size: 34px; line-height: 1.1; }
+
+.player-shell { margin: 28px 0 8px; }
+#player { min-height: 120px; }
+#player .rr-player { max-width: 100%; background: var(--panel); box-shadow: none; }
+#player .rr-controller { background: var(--panel); color: var(--ivory); }
+#player .rr-timeline__time { color: var(--muted); }
+.player-note { color: var(--muted); font-size: 14px; margin-top: 10px; }
 .rr-progress { position: relative; }
-footer.site { color: var(--muted); font-size: 12px; padding: 40px 0; }
-@media (max-width: 600px) { .card { flex-direction: column; align-items: flex-start; } .score { text-align: left; } }
+.marker { position: absolute; top: -4px; width: 8px; height: 14px; margin-left: -4px; padding: 0; border: 0; border-radius: 2px; background: var(--bad); cursor: pointer; z-index: 5; }
+.marker:hover { background: var(--ivory); }
+
+.bill { width: 100%; border-collapse: collapse; }
+.bill th { text-align: left; font-size: 13px; font-weight: 600; color: var(--muted); padding: 8px 0; border-bottom: 1px solid var(--line); }
+.bill td { padding: 14px 0; border-bottom: 1px dashed var(--line); vertical-align: top; }
+.bill .pts { text-align: right; white-space: nowrap; padding-left: 16px; font-variant-numeric: tabular-nums; }
+.bill .charge { font-weight: 600; }
+.bill .quote { color: var(--muted); font-size: 14px; margin-top: 4px; overflow-wrap: anywhere; }
+.bill button { margin-top: 8px; background: none; border: 1px solid var(--line); color: var(--brass); border-radius: 999px; padding: 4px 12px; font: inherit; font-size: 13px; cursor: pointer; touch-action: manipulation; }
+.bill button:hover { border-color: var(--brass); }
+.bill tfoot td { border-bottom: 0; padding-top: 10px; }
+.bill tfoot tr:last-child td { border-top: 2px solid var(--ivory); padding-top: 14px; font-size: 20px; font-weight: 700; }
+.session { color: var(--muted); font-size: 13px; margin-top: 24px; overflow-wrap: anywhere; }
+footer.site { color: var(--muted); font-size: 13px; padding: 48px 0; }
+@media (max-width: 520px) { .register a { grid-template-columns: 72px 1fr; gap: 14px; } .register .score { font-size: 38px; } }
 </style>
 
 </head>
 <body>
-<div class="wrap">
+<main class="wrap">
 <header class="site">
-  <div class="eyebrow">The Cancellation Difficulty Index</div>
-  <h1>Hotel California</h1>
-  <p>You can check out any time you like. An AI agent checked whether you can actually leave: it ran each cancellation itself, recorded every dark pattern it was hit with, and kept the session replay as the receipt. Lower score = harder to escape.</p>
+  <h1 class="marquee">Hotel California</h1>
+  <p>An AI agent tries to cancel each subscription itself, bills the company for every dark pattern it meets on the way out, and keeps the session replay as the receipt. Every checkout starts at 100. The lower the score, the harder it is to leave.</p>
 </header>
-<a class="card" href="runs/gym.html">
-  <div class="score grade-F">26<div style="font-size:13px">grade F</div></div>
-  <div class="meta">
-    <h2>gym</h2>
-    <div class="sub">cancelled in 8 clicks and 115s on 2026-09-30</div>
-    <div class="chips"><span class="chip dark">Hidden cancellation path</span><span class="chip dark">Retention offer wall</span><span class="chip dark">Mandatory exit survey</span><span class="chip dark">Fake urgency or countdown</span><span class="chip dark">Visual misdirection (keep-button styled over cancel)</span><span class="chip dark">Guilt-trip screen</span><span class="chip dark">Confirmshaming button copy</span><span class="chip dark">Repeated are-you-sure confirmations</span><span class="chip dark">Artificial waiting or fake processing</span><span class="chip dark">Threats of losing grandfathered pricing</span></div>
+<ol class="register"><li><a href="runs/gym.html">
+  <div><div class="score num grade-F">26</div><div class="grade">Grade F</div></div>
+  <div>
+    <h3>Streamly+ (practice gym)</h3>
+    <p>Cancelled after 8 clicks and 115s. 12 dark patterns logged across 10 kinds. Sep 30, 2026.</p>
   </div>
-</a>
-<footer class="site">Hotel California: an AI agent that cancels subscriptions and grades the exit. Runs are against the account owner's own subscriptions; scores reflect what the agent was shown on the stated date. Built on Solari cloud browsers + sandboxes, driven by Claude.</footer>
-</div>
+</a></li></ol>
+</main>
+<footer class="site wrap">Hotel California cancels subscriptions with an AI agent and scores how hard the company makes it. Every run is against the account owner's own subscription, and each score reflects what the agent was shown on that date. Built on <a href="https://getsolari.com">Solari</a> cloud browsers and sandboxes, driven by Claude. <a href="https://github.com/IamDejman/hotel-california">Source on GitHub</a>.</footer>
 </body>
 </html>
