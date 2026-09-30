@@ -1,0 +1,106 @@
+{
+  "service": "gym",
+  "displayName": "Streamly+ (practice gym)",
+  "region": "gb",
+  "startUrl": "https://159187ba73024ce83897-8080.preview.getsolari.com/index.html",
+  "ranAt": "2026-09-30T21:09:24.989Z",
+  "outcome": "cancelled",
+  "summary": "Successfully cancelled the Streamly+ Premium 4K subscription. Confirmation code: HC-2481-ESCAPED. Access continues until Sep 14, with no further billing. The cancellation flow contained numerous dark patterns documented along the way: a hidden cancellation link buried under retention options (hidden_path, misdirection), a forced survey requiring a reason to proceed, two retention offers (pause/downgrade and 50% discount), a fake urgency countdown timer, a guilt trip about losing watchlist/shows with confirmshaming button text (\"Yes, take it all away from me\"), an artificial delay pretending to connect to a specialist, a price-hike threat about losing a grandfathered rate, and multiple repeated confirmation screens.",
+  "metrics": {
+    "clicks": 8,
+    "keystrokesFields": 0,
+    "pagesVisited": 8,
+    "agentSteps": 15,
+    "durationMs": 87295
+  },
+  "patterns": [
+    {
+      "type": "hidden_path",
+      "evidence": "The cancellation link \"continue to membership cancellation\" is buried at the very bottom of the page in small text under \"Looking for something else?\" while \"Pause membership\" and \"Switch plan\" are prominently displayed.",
+      "url": "https://159187ba73024ce83897-8080.preview.getsolari.com/manage.html",
+      "step": 2,
+      "atMs": 1790802493632
+    },
+    {
+      "type": "misdirection",
+      "evidence": "Prominent buttons for \"Pause membership\" and \"Switch plan\" are offered before the small \"continue to membership cancellation\" link, steering users away from cancelling.",
+      "url": "https://159187ba73024ce83897-8080.preview.getsolari.com/manage.html",
+      "step": 2,
+      "atMs": 1790802493632
+    },
+    {
+      "type": "retention_offer",
+      "evidence": "\"Pause your membership for up to 3 months. Keep your profile, watchlist, and grandfathered price.\" and \"Standard with ads is only $6.99 a month.\" offered before allowing cancellation.",
+      "url": "https://159187ba73024ce83897-8080.preview.getsolari.com/manage.html",
+      "step": 2,
+      "atMs": 1790802493632
+    },
+    {
+      "type": "forced_survey",
+      "evidence": "\"We can't continue until you tell us why you're thinking of leaving.\" — must select a reason to proceed.",
+      "url": "https://159187ba73024ce83897-8080.preview.getsolari.com/survey.html",
+      "step": 4,
+      "atMs": 1790802502455
+    },
+    {
+      "type": "retention_offer",
+      "evidence": "\"50% off for 3 months — Keep everything you love for just $7.99 a month.\" interposed before cancellation.",
+      "url": "https://159187ba73024ce83897-8080.preview.getsolari.com/offer.html",
+      "step": 7,
+      "atMs": 1790802517939
+    },
+    {
+      "type": "fake_urgency",
+      "evidence": "\"This one-time offer expires in 4:57.\" — a countdown timer pressuring the user to accept the retention offer.",
+      "url": "https://159187ba73024ce83897-8080.preview.getsolari.com/offer.html",
+      "step": 7,
+      "atMs": 1790802517939
+    },
+    {
+      "type": "guilt_trip",
+      "evidence": "\"You're 2 episodes from finishing Moonrise Protocol. Your 4 saved shows, your viewing history, and your personalized picks will all be gone.\"",
+      "url": "https://159187ba73024ce83897-8080.preview.getsolari.com/guilt.html",
+      "step": 9,
+      "atMs": 1790802528194
+    },
+    {
+      "type": "confirmshaming",
+      "evidence": "The cancel button reads \"Yes, take it all away from me\" while the keep button reads \"No, keep the things I love\"",
+      "url": "https://159187ba73024ce83897-8080.preview.getsolari.com/guilt.html",
+      "step": 9,
+      "atMs": 1790802528195
+    },
+    {
+      "type": "repeated_confirmation",
+      "evidence": "This is another \"Are you sure?\" screen after the survey and the retention offer, asking again whether the user wants to cancel.",
+      "url": "https://159187ba73024ce83897-8080.preview.getsolari.com/guilt.html",
+      "step": 9,
+      "atMs": 1790802528195
+    },
+    {
+      "type": "artificial_delay",
+      "evidence": "\"Connecting you to a cancellation specialist — Please stay on this page. A specialist is reviewing your account...\"",
+      "url": "https://159187ba73024ce83897-8080.preview.getsolari.com/wait.html",
+      "step": 11,
+      "atMs": 1790802535784
+    },
+    {
+      "type": "price_hike_threat",
+      "evidence": "\"You are on a grandfathered plan at $15.99. If you cancel, this price is gone forever. New members pay $22.99 for the same plan.\"",
+      "url": "https://159187ba73024ce83897-8080.preview.getsolari.com/confirm.html",
+      "step": 13,
+      "atMs": 1790802545866
+    },
+    {
+      "type": "repeated_confirmation",
+      "evidence": "\"Are you absolutely sure?\" — yet another confirmation screen after the guilt trip screen, making this at least the third are-you-sure step.",
+      "url": "https://159187ba73024ce83897-8080.preview.getsolari.com/confirm.html",
+      "step": 13,
+      "atMs": 1790802545866
+    }
+  ],
+  "score": 26,
+  "grade": "F",
+  "sessionId": "AnG2UjBKIJRX5gEpQjG7CweGr4ZJc0TZUHRKWcI1KxJdDiXJtIrIu4FDJuyAKTL8VBJg73HEwVfF8nGKgKrQJwsTqGdbxSZJC5nnhNAlZc0eNhj6SOTJmptL2lIK6B_9RcT0qy1r_r3XZHn7vXRUjG287Fmq7cyLfZh7gMQ1bocIEC40PzHxLhh-Gcr0bwtWV8HbOtsih7CR.EzIicEuWsUaZz-sYxnvP7w",
+  "replayFile": "replays/gym@gb-AnG2UjBKIJRX5gEpQjG7CweGr4ZJc0TZUHRKWcI1KxJdDiXJtIrIu4FDJuyAKTL8VBJg73HEwVfF8nGKgKrQJwsTqGdbxSZJC5nnhNAlZc0eNhj6SOTJmptL2lIK6B_9RcT0qy1r_r3XZHn7vXRUjG287Fmq7cyLfZh7gMQ1bocIEC40PzHxLhh-Gcr0bwtWV8HbOtsih7CR.EzIicEuWsUaZz-sYxnvP7w.ndjson"
+}
