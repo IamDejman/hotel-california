@@ -3,6 +3,7 @@
  * Uploads land asynchronously after release, so poll patiently.
  */
 import { writeFile, mkdir } from "node:fs/promises"
+import { createHash } from "node:crypto"
 import path from "node:path"
 
 interface SessionsApi {
@@ -19,7 +20,9 @@ export async function downloadReplay(
     try {
       const blob = await sessions.downloadReplay(sessionId)
       await mkdir("replays", { recursive: true })
-      const file = path.join("replays", `${service}-${sessionId}.ndjson`)
+      // Session IDs run to ~250 characters; a short hash keeps names under the 255-byte limit.
+      const id = createHash("sha256").update(sessionId).digest("hex").slice(0, 12)
+      const file = path.join("replays", `${service}-${id}.ndjson`)
       // Drop sandbox preview tokens from recorded URLs before the replay is published.
       const events = Buffer.from(blob as ArrayBuffer).toString("utf8")
       await writeFile(file, events.replace(/[?&]pt_token=[A-Za-z0-9_.-]+/g, ""))

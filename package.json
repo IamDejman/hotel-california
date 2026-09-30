@@ -11,18 +11,24 @@
     "site": "tsx src/site.ts",
     "compare": "tsx src/compare.ts",
     "typecheck": "tsc --noEmit -p .",
-    "test": "tsx --test test/*.test.ts"
+    "test": "tsx --test test/*.test.ts",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.122.0",
     "@solarisdk/browser": "^0.1.1",
     "@solarisdk/sdk": "^0.1.2",
-    "zod": "^3.24.1"
+    "openai": "^7.25.0",
+    "zod": "^3.24.1",
+    "zod-to-json-schema": "^3.25.2"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/node": "^26.4.0",
+    "eslint": "^10.11.0",
     "tsx": "^4.19.2",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.71.0"
   },
   "engines": {
     "node": ">=22"

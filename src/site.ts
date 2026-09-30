@@ -221,7 +221,7 @@ ${page.extraHead ?? ""}
 <main class="wrap">
 ${page.body}
 </main>
-<footer class="site wrap">Built on <a href="https://getsolari.com">Solari</a> and Claude. <a href="https://github.com/IamDejman/hotel-california">Source</a></footer>
+<footer class="site wrap">Built on <a href="https://getsolari.com">Solari</a>. <a href="https://github.com/IamDejman/hotel-california">Source</a></footer>
 </body>
 </html>
 `
@@ -249,11 +249,11 @@ function indexPage(results: RunResult[]): string {
 </header>
 <section id="run">
   <h2>Run it yourself</h2>
-  <p class="prose">You need Node 22 or newer, a Solari API key and an Anthropic API key.</p>
+  <p class="prose">You need Node 22 or newer, a Solari API key, and a key for the AI model. Claude Sonnet 5.5 is the default. Any model with tool calling works through an OpenAI-compatible API. The <a href="https://github.com/IamDejman/hotel-california#choosing-a-model">README</a> shows how.</p>
   <pre><code>git clone https://github.com/IamDejman/hotel-california
 cd hotel-california
 npm install
-cp .env.example .env   # add both keys
+cp .env.example .env   # add your keys
 npm start -- gym       # scores the practice site
 npm run site           # open site/index.html</code></pre>
   <p class="prose">To test your own cancel page, pass its URL:</p>
@@ -265,7 +265,7 @@ npm run site           # open site/index.html</code></pre>
   <ol class="steps">
     <li><strong>Solari sandbox:</strong> Hosts the practice site. Streamly+ is a fake streaming service. It uses the same cancellation traps as real companies.</li>
     <li><strong>Solari browser:</strong> Does the clicking. It runs in stealth mode and records the whole session. For a real service, it can use a saved login and a proxy in another country.</li>
-    <li><strong>Claude:</strong> Decides each step. It reads the page and picks the next click. It records every dark pattern and quotes the exact wording.</li>
+    <li><strong>AI model:</strong> Decides each step. It reads the page and picks the next click. It records every dark pattern and quotes the exact wording.</li>
     <li><strong>Score:</strong> Starts at 100. Each dark pattern costs points. Extra clicks and extra time cost points too.</li>
     <li><strong>Replay:</strong> The Solari recording becomes the replay. Each charge is marked at the moment it happened.</li>
   </ol>
