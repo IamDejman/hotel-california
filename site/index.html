@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#2b1216">
 <title>Hotel California: the Cancellation Difficulty Index</title>
-<meta name="description" content="An AI agent cancels subscriptions, bills companies for every dark pattern on the way out, and keeps the replay as the receipt.">
+<meta name="description" content="We send an AI agent to cancel a subscription and score how hard the company makes it to leave. Every run has a replay.">
 <meta property="og:title" content="Hotel California: the Cancellation Difficulty Index">
-<meta property="og:description" content="An AI agent cancels subscriptions, bills companies for every dark pattern on the way out, and keeps the replay as the receipt.">
+<meta property="og:description" content="We send an AI agent to cancel a subscription and score how hard the company makes it to leave. Every run has a replay.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://iamdejman.github.io/hotel-california/">
 <meta property="og:image" content="https://iamdejman.github.io/hotel-california/og.png">
@@ -73,9 +73,11 @@ h2 { font-size: 20px; margin: 36px 0 12px; }
 .bill button:hover { border-color: var(--brass); }
 .bill tfoot td { border-bottom: 0; padding-top: 10px; }
 .bill tfoot tr:last-child td { border-top: 2px solid var(--ivory); padding-top: 14px; font-size: 20px; font-weight: 700; }
-.report { color: var(--muted); max-width: 65ch; }
-.session { color: var(--muted); font-size: 13px; margin-top: 24px; overflow-wrap: anywhere; }
-footer.site { color: var(--muted); font-size: 13px; padding: 48px 0; }
+.report { margin-top: 32px; color: var(--muted); }
+.report summary { cursor: pointer; color: var(--ivory); font-weight: 600; }
+.report p { margin-top: 10px; max-width: 65ch; }
+.session { font-size: 13px; overflow-wrap: anywhere; }
+footer.site { color: var(--muted); font-size: 13px; padding-block: 48px; }
 @media (max-width: 520px) { .register a { grid-template-columns: 72px 1fr; gap: 14px; } .register .score { font-size: 38px; } }
 </style>
 
@@ -84,16 +86,16 @@ footer.site { color: var(--muted); font-size: 13px; padding: 48px 0; }
 <main class="wrap">
 <header class="site">
   <h1 class="marquee">Hotel California</h1>
-  <p>An AI agent tries to cancel each subscription itself, bills the company for every dark pattern it meets on the way out, and keeps the session replay as the receipt. Every checkout starts at 100. The lower the score, the harder it is to leave.</p>
+  <p>We send an AI agent to cancel a subscription and score how hard the company makes it to leave.</p>
 </header>
 <ol class="register"><li><a href="runs/gym.html">
   <div><div class="score num grade-F">26</div><div class="grade">Grade F</div></div>
   <div>
     <h2>Streamly+ (practice gym)</h2>
-    <p>Cancelled after 8 clicks and 115s. 12 dark patterns logged across 10 kinds. Sep 30, 2026.</p>
+    <p>Cancelled. 12 dark patterns in 115s.</p>
   </div>
 </a></li></ol>
 </main>
-<footer class="site wrap">Hotel California cancels subscriptions with an AI agent and scores how hard the company makes it. Every run is against the account owner’s own subscription, and each score reflects what the agent was shown on that date. Built on <a href="https://getsolari.com">Solari</a> cloud browsers and sandboxes, driven by Claude. <a href="https://github.com/IamDejman/hotel-california">Source on GitHub</a>.</footer>
+<footer class="site wrap">Built on <a href="https://getsolari.com">Solari</a> and Claude. <a href="https://github.com/IamDejman/hotel-california">Source</a></footer>
 </body>
 </html>

@@ -37,15 +37,16 @@ export async function deployGym(apiKey: string): Promise<GymDeployment> {
     const { url } = await sandbox.previewUrl(PORT)
 
     // Wait until the preview serves before pointing an agent at it.
-    for (let i = 0; i < 15; i++) {
+    let ready = false
+    for (let i = 0; i < 15 && !ready; i++) {
       await new Promise((r) => setTimeout(r, 1000))
       try {
-        const res = await fetch(url)
-        if (res.ok) break
+        ready = (await fetch(url)).ok
       } catch {
         // gateway not ready yet, keep waiting
       }
     }
+    if (!ready) throw new Error("The gym preview URL never responded. Check the sandbox and retry.")
     console.log("gym is live:", url)
     return { url, teardown: () => sandbox.kill() }
   } catch (err) {

@@ -76,9 +76,11 @@ h2 { font-size: 20px; margin: 36px 0 12px; }
 .bill button:hover { border-color: var(--brass); }
 .bill tfoot td { border-bottom: 0; padding-top: 10px; }
 .bill tfoot tr:last-child td { border-top: 2px solid var(--ivory); padding-top: 14px; font-size: 20px; font-weight: 700; }
-.report { color: var(--muted); max-width: 65ch; }
-.session { color: var(--muted); font-size: 13px; margin-top: 24px; overflow-wrap: anywhere; }
-footer.site { color: var(--muted); font-size: 13px; padding: 48px 0; }
+.report { margin-top: 32px; color: var(--muted); }
+.report summary { cursor: pointer; color: var(--ivory); font-weight: 600; }
+.report p { margin-top: 10px; max-width: 65ch; }
+.session { font-size: 13px; overflow-wrap: anywhere; }
+footer.site { color: var(--muted); font-size: 13px; padding-block: 48px; }
 @media (max-width: 520px) { .register a { grid-template-columns: 72px 1fr; gap: 14px; } .register .score { font-size: 38px; } }
 `
 
@@ -144,6 +146,9 @@ boot().catch((err) => {
 const esc = (s: string): string =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;")
 
+/** The quoted page text in an agent's evidence note, or the whole note when it quotes nothing. */
+export const quoteOf = (evidence: string): string => evidence.match(/"([^"]+)"/)?.[1] ?? evidence
+
 /** Agent-written text, with the model's em dashes set as plain hyphens. */
 const prose = (s: string): string => esc(s.replace(/\s*\u2014\s*/g, " - "))
 
@@ -201,7 +206,7 @@ ${page.extraHead ?? ""}
 <main class="wrap">
 ${page.body}
 </main>
-<footer class="site wrap">Hotel California cancels subscriptions with an AI agent and scores how hard the company makes it. Every run is against the account owner’s own subscription, and each score reflects what the agent was shown on that date. Built on <a href="https://getsolari.com">Solari</a> cloud browsers and sandboxes, driven by Claude. <a href="https://github.com/IamDejman/hotel-california">Source on GitHub</a>.</footer>
+<footer class="site wrap">Built on <a href="https://getsolari.com">Solari</a> and Claude. <a href="https://github.com/IamDejman/hotel-california">Source</a></footer>
 </body>
 </html>
 `
@@ -210,24 +215,23 @@ ${page.body}
 function indexPage(results: RunResult[]): string {
   const rows = results
     .map((r) => {
-      const kinds = new Set(r.patterns.map((p) => p.type)).size
       return `<li><a href="runs/${esc(slugOf(r))}.html">
   <div><div class="score num grade-${r.grade}">${r.score}</div><div class="grade">Grade ${r.grade}</div></div>
   <div>
     <h2>${esc(nameOf(r))}${esc(regionSuffix(r))}</h2>
-    <p>${OUTCOME_LABELS[r.outcome]} after ${r.metrics.clicks} clicks and ${seconds(r)}s. ${r.patterns.length} dark patterns logged across ${kinds} kinds. ${dateOf(r.ranAt)}.</p>
+    <p>${OUTCOME_LABELS[r.outcome]}. ${r.patterns.length} dark patterns in ${seconds(r)}s.</p>
   </div>
 </a></li>`
     })
     .join("\n")
   const body = `<header class="site">
   <h1 class="marquee">Hotel California</h1>
-  <p>An AI agent tries to cancel each subscription itself, bills the company for every dark pattern it meets on the way out, and keeps the session replay as the receipt. Every checkout starts at 100. The lower the score, the harder it is to leave.</p>
+  <p>We send an AI agent to cancel a subscription and score how hard the company makes it to leave.</p>
 </header>
 ${rows ? `<ol class="register">${rows}</ol>` : `<p>No runs yet. Run <code>npm start -- gym</code> to score the practice gym, then <code>npm run site</code>.</p>`}`
   return shell({
     title: "Hotel California: the Cancellation Difficulty Index",
-    description: "An AI agent cancels subscriptions, bills companies for every dark pattern on the way out, and keeps the replay as the receipt.",
+    description: "We send an AI agent to cancel a subscription and score how hard the company makes it to leave. Every run has a replay.",
     path: "",
     body,
   })
@@ -240,10 +244,10 @@ function runPage(r: RunResult, hasReplay: boolean): string {
     .map((c) => {
       const p = c.pattern === undefined ? undefined : r.patterns[c.pattern]
       const watch = p && hasReplay
-        ? `<button type="button" data-mark="${c.pattern}" aria-label="Watch it happen: ${esc(c.label)}" hidden>Watch it happen</button>`
+        ? `<button type="button" data-mark="${c.pattern}" aria-label="Watch: ${esc(c.label)}" hidden>Watch</button>`
         : ""
       return `<tr>
-  <td><div class="charge">${esc(c.label)}</div>${p ? `<p class="quote">${prose(p.evidence)}</p>` : ""}${watch}</td>
+  <td><div class="charge">${esc(c.label)}</div>${p ? `<p class="quote">“${prose(quoteOf(p.evidence))}”</p>` : ""}${watch}</td>
   <td class="pts">&minus;${c.points}</td>
 </tr>`
     })
@@ -252,7 +256,6 @@ function runPage(r: RunResult, hasReplay: boolean): string {
   const player = hasReplay
     ? `<section class="player-shell" aria-label="Session replay">
   <div id="player"></div>
-  <p class="player-note">DOM-level replay recorded by the Solari cloud browser. Each tick on the timeline marks a charge on the bill.</p>
 </section>
 <script type="application/json" id="run-data">${JSON.stringify({
         replay: `../replays/${slugOf(r)}.ndjson`,
@@ -285,9 +288,11 @@ ${rows || `<tr><td>No charges. A clean exit.</td><td class="pts">0</td></tr>`}
     <tr><td>Escape Score</td><td class="pts grade-${r.grade}">${r.score}</td></tr>
   </tfoot>
 </table>
-<h2>The agent’s report</h2>
-<p class="report">${prose(r.summary)}</p>
-<p class="session">Run on ${dateOf(r.ranAt)}. Solari session <code title="${esc(r.sessionId)}">${esc(r.sessionId.slice(0, 16))}…</code></p>`
+<details class="report">
+  <summary>Agent’s report</summary>
+  <p>${prose(r.summary)}</p>
+  <p class="session">${dateOf(r.ranAt)}, Solari session <code title="${esc(r.sessionId)}">${esc(r.sessionId.slice(0, 16))}…</code></p>
+</details>`
 
   return shell({
     title: `${nameOf(r)}${regionSuffix(r)}: Escape Score ${r.score} (${r.grade})`,

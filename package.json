@@ -9,7 +9,9 @@
     "gym:local": "python3 -m http.server 4321 -d gym",
     "leaderboard": "tsx src/report.ts",
     "site": "tsx src/site.ts",
-    "compare": "tsx src/compare.ts"
+    "compare": "tsx src/compare.ts",
+    "typecheck": "tsc --noEmit -p .",
+    "test": "tsx --test test/*.test.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.122.0",
