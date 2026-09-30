@@ -15,37 +15,50 @@ import type { RunResult } from "./types.js"
 
 const RRWEB_CSS = "https://cdn.jsdelivr.net/npm/rrweb-player@1.0.0-alpha.4/dist/style.css"
 const RRWEB_JS = "https://cdn.jsdelivr.net/npm/rrweb-player@1.0.0-alpha.4/dist/index.js"
-const FONTS = "https://fonts.googleapis.com/css2?family=Limelight&display=swap"
 const SITE_URL = process.env.SITE_URL?.replace(/\/$/, "")
 
 const CSS = `
 * { margin: 0; box-sizing: border-box; }
 :root {
-  color-scheme: dark;
-  --lobby: #2b1216; --panel: #371a1f; --line: #57303a; --ivory: #f3eadb;
-  --muted: #c3aa9f; --brass: #d4ad62; --good: #a6dcae; --mid: #eccb74; --bad: #ff9a86;
-  --marquee: "Limelight", Georgia, serif;
+  color-scheme: light dark;
+  --bg: #ffffff; --text: #111111; --muted: #666666; --line: #e6e6e6; --panel: #f5f5f5;
+  --good: #1a7f37; --mid: #9a6700; --bad: #c62828;
 }
-body { background: var(--lobby); color: var(--ivory); font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
-a { color: var(--brass); text-underline-offset: 3px; }
-a:hover { color: var(--ivory); }
-:focus-visible { outline: 2px solid var(--brass); outline-offset: 3px; border-radius: 4px; }
-.wrap { max-width: 760px; margin: 0 auto; padding: 0 16px; }
-header.site { padding: 56px 0 28px; }
-.marquee { font-family: var(--marquee); font-weight: 400; font-size: clamp(40px, 9vw, 64px); line-height: 1.05; color: var(--brass); text-wrap: balance; }
-header.site p { color: var(--muted); max-width: 60ch; margin-top: 12px; text-wrap: pretty; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #0f0f0f; --text: #ededed; --muted: #a0a0a0; --line: #2a2a2a; --panel: #1a1a1a; --good: #57c279; --mid: #d8a93b; --bad: #ff7b72; }
+}
+body { background: var(--bg); color: var(--text); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
+a { color: inherit; text-underline-offset: 3px; text-decoration-color: var(--muted); }
+a:hover { text-decoration-color: currentColor; }
+:focus-visible { outline: 2px solid var(--text); outline-offset: 3px; border-radius: 4px; }
+.wrap { max-width: 720px; margin: 0 auto; padding: 0 16px; }
+header.site { padding: 64px 0 32px; }
+.title { font-size: clamp(32px, 7vw, 44px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.1; text-wrap: balance; }
+header.site p { color: var(--muted); max-width: 60ch; margin-top: 12px; font-size: 18px; text-wrap: pretty; }
+.cta { display: inline-block; margin-top: 24px; background: var(--text); color: var(--bg); padding: 10px 18px; border-radius: 8px; font-weight: 600; text-decoration: none; }
+.cta:hover { opacity: 0.85; }
+header.site .alt { font-size: 15px; margin-top: 14px; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 .back { display: inline-block; margin-bottom: 20px; font-size: 14px; }
-h1.run { font-size: 30px; line-height: 1.2; text-wrap: balance; overflow-wrap: anywhere; }
-h2 { font-size: 20px; margin: 36px 0 12px; }
+h1.run { font-size: 30px; line-height: 1.2; letter-spacing: -0.01em; text-wrap: balance; overflow-wrap: anywhere; }
+h2 { font-size: 18px; margin: 48px 0 12px; }
 .num { font-variant-numeric: tabular-nums; }
+.prose { color: var(--muted); max-width: 65ch; margin: 8px 0; }
+.steps { padding-left: 1.3em; color: var(--muted); }
+.steps li { margin: 10px 0; max-width: 65ch; padding-left: 4px; }
+.steps strong { color: var(--text); font-weight: 600; }
+pre { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; overflow-x: auto; font-size: 14px; line-height: 1.6; margin: 12px 0; }
+code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.92em; }
 
 .register { list-style: none; padding: 0; border-top: 1px solid var(--line); }
-.register a { display: grid; grid-template-columns: 96px 1fr; gap: 20px; padding: 22px 8px; border-bottom: 1px solid var(--line); color: var(--ivory); text-decoration: none; }
+.register a { display: grid; grid-template-columns: 80px 1fr; gap: 20px; padding: 20px 8px; border-bottom: 1px solid var(--line); text-decoration: none; }
 .register a:hover { background: var(--panel); }
-.register .score { font-family: var(--marquee); font-size: 48px; line-height: 1; }
-.register .grade { font-size: 14px; color: var(--muted); margin-top: 6px; }
-.register h2 { font-size: 19px; margin: 0; overflow-wrap: anywhere; }
+.register .score { font-size: 40px; font-weight: 700; line-height: 1; letter-spacing: -0.02em; }
+.register .grade { font-size: 13px; color: var(--muted); margin-top: 6px; }
+.register h3 { font-size: 18px; margin: 0; overflow-wrap: anywhere; }
 .register p { color: var(--muted); font-size: 14px; margin-top: 4px; }
+.register .go { display: inline-block; margin-top: 8px; font-size: 14px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
 .grade-A, .grade-B { color: var(--good); }
 .grade-C, .grade-D { color: var(--mid); }
 .grade-F { color: var(--bad); }
@@ -53,35 +66,39 @@ h2 { font-size: 20px; margin: 36px 0 12px; }
 .facts { display: flex; flex-wrap: wrap; gap: 12px 32px; margin: 20px 0 8px; }
 .facts dt { font-size: 13px; color: var(--muted); }
 .facts dd { font-size: 22px; font-weight: 700; }
-.facts .score dd { font-family: var(--marquee); font-weight: 400; font-size: 34px; line-height: 1.1; }
+.facts .score dd { font-size: 30px; line-height: 1.1; letter-spacing: -0.02em; }
 
 .player-shell { margin: 28px 0 8px; }
 #player { min-height: 120px; }
-#player .rr-player { max-width: 100%; background: var(--panel); box-shadow: none; }
-#player .rr-controller { background: var(--panel); color: var(--ivory); }
+#player .rr-player { max-width: 100%; background: var(--panel); box-shadow: none; border: 1px solid var(--line); }
+#player .rr-controller { background: var(--panel); color: var(--text); }
 #player .rr-timeline__time { color: var(--muted); }
+#player .rr-progress__handler, #player .switch input[type="checkbox"]:checked + label::before { background: var(--text); }
+#player .rr-progress__step { background: var(--line); }
+#player .rr-controller__btns button { color: var(--text); }
+#player .rr-controller__btns button.active { background: var(--text); color: var(--bg); }
 .player-note { color: var(--muted); font-size: 14px; margin-top: 10px; }
 .rr-progress { position: relative; }
 .marker { position: absolute; top: -9px; width: 20px; height: 24px; margin-left: -10px; padding: 0; border: 0; background: none; cursor: pointer; z-index: 5; touch-action: manipulation; }
 .marker::before { content: ""; position: absolute; left: 6px; top: 5px; width: 8px; height: 14px; border-radius: 2px; background: var(--bad); }
-.marker:hover::before { background: var(--ivory); }
+.marker:hover::before { background: var(--text); }
 
 .bill { width: 100%; border-collapse: collapse; }
 .bill th { text-align: left; font-size: 13px; font-weight: 600; color: var(--muted); padding: 8px 0; border-bottom: 1px solid var(--line); }
-.bill td { padding: 14px 0; border-bottom: 1px dashed var(--line); vertical-align: top; }
+.bill td { padding: 14px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
 .bill .pts { text-align: right; white-space: nowrap; padding-left: 16px; font-variant-numeric: tabular-nums; }
 .bill .charge { font-weight: 600; }
 .bill .quote { color: var(--muted); font-size: 14px; margin-top: 4px; overflow-wrap: anywhere; }
-.bill button { margin-top: 8px; background: none; border: 1px solid var(--line); color: var(--brass); border-radius: 999px; padding: 4px 12px; font: inherit; font-size: 13px; cursor: pointer; touch-action: manipulation; }
-.bill button:hover { border-color: var(--brass); }
+.bill button { margin-top: 8px; background: none; border: 1px solid var(--line); color: var(--text); border-radius: 6px; padding: 4px 12px; font: inherit; font-size: 13px; cursor: pointer; touch-action: manipulation; }
+.bill button:hover { border-color: var(--text); }
 .bill tfoot td { border-bottom: 0; padding-top: 10px; }
-.bill tfoot tr:last-child td { border-top: 2px solid var(--ivory); padding-top: 14px; font-size: 20px; font-weight: 700; }
+.bill tfoot tr:last-child td { border-top: 2px solid var(--text); padding-top: 14px; font-size: 20px; font-weight: 700; }
 .report { margin-top: 32px; color: var(--muted); }
-.report summary { cursor: pointer; color: var(--ivory); font-weight: 600; }
+.report summary { cursor: pointer; color: var(--text); font-weight: 600; }
 .report p { margin-top: 10px; max-width: 65ch; }
 .session { font-size: 13px; overflow-wrap: anywhere; }
 footer.site { color: var(--muted); font-size: 13px; padding-block: 48px; }
-@media (max-width: 520px) { .register a { grid-template-columns: 72px 1fr; gap: 14px; } .register .score { font-size: 38px; } }
+@media (max-width: 520px) { .register a { grid-template-columns: 64px 1fr; gap: 14px; } .register .score { font-size: 32px; } }
 `
 
 const PLAYER_SCRIPT = `
@@ -189,16 +206,14 @@ function shell(page: Page): string {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#2b1216">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0f0f0f" media="(prefers-color-scheme: dark)">
 <title>${esc(page.title)}</title>
 <meta name="description" content="${esc(page.description)}">
 <meta property="og:title" content="${esc(page.title)}">
 <meta property="og:description" content="${esc(page.description)}">
 <meta property="og:type" content="website">
 ${preview}
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="${FONTS}">
 <style>${CSS}</style>
 ${page.extraHead ?? ""}
 </head>
@@ -218,17 +233,47 @@ function indexPage(results: RunResult[]): string {
       return `<li><a href="runs/${esc(slugOf(r))}.html">
   <div><div class="score num grade-${r.grade}">${r.score}</div><div class="grade">Grade ${r.grade}</div></div>
   <div>
-    <h2>${esc(nameOf(r))}${esc(regionSuffix(r))}</h2>
+    <h3>${esc(nameOf(r))}${esc(regionSuffix(r))}</h3>
     <p>${OUTCOME_LABELS[r.outcome]}. ${r.patterns.length} dark patterns in ${seconds(r)}s.</p>
+    <span class="go">Watch the replay and see the bill</span>
   </div>
 </a></li>`
     })
     .join("\n")
+  const top = results[0]
+  const watch = top ? `\n  <p class="alt">Or <a href="runs/${esc(slugOf(top))}.html">watch a run first</a>.</p>` : ""
   const body = `<header class="site">
-  <h1 class="marquee">Hotel California</h1>
+  <h1 class="title">Hotel California</h1>
   <p>We send an AI agent to cancel a subscription and score how hard the company makes it to leave.</p>
+  <a class="cta" href="#run">Run it yourself</a>${watch}
 </header>
-${rows ? `<ol class="register">${rows}</ol>` : `<p>No runs yet. Run <code>npm start -- gym</code> to score the practice gym, then <code>npm run site</code>.</p>`}`
+<section id="run">
+  <h2>Run it yourself</h2>
+  <p class="prose">You need Node 22 or newer, a Solari API key and an Anthropic API key.</p>
+  <pre><code>git clone https://github.com/IamDejman/hotel-california
+cd hotel-california
+npm install
+cp .env.example .env   # add both keys
+npm start -- gym       # scores the practice site
+npm run site           # open site/index.html</code></pre>
+  <p class="prose">To test your own cancel page, pass its URL:</p>
+  <pre><code>npm start -- https://your-site.com/account</code></pre>
+  <p class="prose">If the page needs a login, save a Solari login profile first. The <a href="https://github.com/IamDejman/hotel-california#readme">README</a> shows how.</p>
+</section>
+<section>
+  <h2>How it works</h2>
+  <ol class="steps">
+    <li><strong>Solari sandbox:</strong> Hosts the practice site. Streamly+ is a fake streaming service. It uses the same cancellation traps as real companies.</li>
+    <li><strong>Solari browser:</strong> Does the clicking. It runs in stealth mode and records the whole session. For a real service, it can use a saved login and a proxy in another country.</li>
+    <li><strong>Claude:</strong> Decides each step. It reads the page and picks the next click. It records every dark pattern and quotes the exact wording.</li>
+    <li><strong>Score:</strong> Starts at 100. Each dark pattern costs points. Extra clicks and extra time cost points too.</li>
+    <li><strong>Replay:</strong> The Solari recording becomes the replay. Each charge is marked at the moment it happened.</li>
+  </ol>
+</section>
+<section>
+  <h2>Results</h2>
+  ${rows ? `<ol class="register">${rows}</ol>` : `<p class="prose">No runs yet.</p>`}
+</section>`
   return shell({
     title: "Hotel California: the Cancellation Difficulty Index",
     description: "We send an AI agent to cancel a subscription and score how hard the company makes it to leave. Every run has a replay.",

@@ -67,7 +67,8 @@ export function escapeScore(metrics: RunMetrics, patterns: PatternSighting[]): n
 }
 
 export function grade(score: number, outcome: string): string {
-  if (outcome === "blocked" || outcome === "requires_human") return "F"
+  // No escape, no pass: blocked, needs a human, or the agent gave up.
+  if (outcome !== "cancelled") return "F"
   if (score >= 90) return "A"
   if (score >= 75) return "B"
   if (score >= 60) return "C"
