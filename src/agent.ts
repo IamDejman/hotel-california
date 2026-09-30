@@ -1,13 +1,12 @@
 /**
- * The escape artist: a Claude-driven loop that navigates a cancellation flow,
+ * The escape artist: a model-driven loop that navigates a cancellation flow,
  * logging every dark pattern it gets hit with along the way.
  */
-import Anthropic from "@anthropic-ai/sdk"
 import { z } from "zod"
 import { observe, formatObservation, refSelector, type AgentPage } from "./browser.js"
+import { startChat, type ToolCall, type ToolSpec } from "./model.js"
 import { PATTERN_TYPES, type Outcome, type PatternSighting, type PatternType } from "./types.js"
 
-const MODEL = process.env.ANTHROPIC_MODEL ?? "claude-opus-4-6"
 const MAX_STEPS = 40
 
 const SYSTEM = `You are an agent cancelling a subscription on the account owner's explicit instructions, on their own account. Your goal is to reach a confirmed cancellation in as few steps as possible while documenting every obstacle.
@@ -45,58 +44,16 @@ const finishInput = z.object({
   summary: z.string(),
 })
 
-const TOOLS: Anthropic.Tool[] = [
-  {
-    name: "click",
-    description: "Click the element with the given ref from the latest observation.",
-    input_schema: {
-      type: "object",
-      properties: { ref: { type: "number" }, why: { type: "string" } },
-      required: ["ref", "why"],
-    },
-  },
-  {
-    name: "type_text",
-    description: "Fill the input element with the given ref with text.",
-    input_schema: {
-      type: "object",
-      properties: { ref: { type: "number" }, text: { type: "string" } },
-      required: ["ref", "text"],
-    },
-  },
-  {
-    name: "goto",
-    description: "Navigate directly to a URL on the same site.",
-    input_schema: {
-      type: "object",
-      properties: { url: { type: "string" } },
-      required: ["url"],
-    },
-  },
+const TOOLS: ToolSpec[] = [
+  { name: "click", description: "Click the element with the given ref from the latest observation.", input: clickInput },
+  { name: "type_text", description: "Fill the input element with the given ref with text.", input: typeInput },
+  { name: "goto", description: "Navigate directly to a URL on the same site.", input: gotoInput },
   {
     name: "record_pattern",
     description: "Log a dark pattern you are looking at right now, with a short quote as evidence.",
-    input_schema: {
-      type: "object",
-      properties: {
-        type: { type: "string", enum: [...PATTERN_TYPES] },
-        evidence: { type: "string" },
-      },
-      required: ["type", "evidence"],
-    },
+    input: patternInput,
   },
-  {
-    name: "finish",
-    description: "End the run with a final outcome and a one-paragraph summary.",
-    input_schema: {
-      type: "object",
-      properties: {
-        outcome: { type: "string", enum: ["cancelled", "blocked", "requires_human", "gave_up"] },
-        summary: { type: "string" },
-      },
-      required: ["outcome", "summary"],
-    },
-  },
+  { name: "finish", description: "End the run with a final outcome and a one-paragraph summary.", input: finishInput },
 ]
 
 export interface AgentRun {
@@ -110,7 +67,6 @@ export interface AgentRun {
 }
 
 export async function runEscape(page: AgentPage, startUrl: string): Promise<AgentRun> {
-  const client = new Anthropic()
   const run: AgentRun = {
     outcome: "gave_up",
     summary: "Agent ran out of steps before reaching a terminal state.",
@@ -124,50 +80,32 @@ export async function runEscape(page: AgentPage, startUrl: string): Promise<Agen
 
   await page.goto(startUrl)
   const first = await observe(page)
-  const messages: Anthropic.MessageParam[] = [
-    {
-      role: "user",
-      content: `Cancel the subscription starting from this page.\n\n${formatObservation(first)}`,
-    },
-  ]
+  const chat = startChat(SYSTEM, TOOLS, `Cancel the subscription starting from this page.\n\n${formatObservation(first)}`)
 
   while (run.agentSteps < MAX_STEPS) {
     run.agentSteps++
-    const stream = client.messages.stream({
-      model: MODEL,
-      max_tokens: 16000,
-      thinking: { type: "adaptive" },
-      system: SYSTEM,
-      tools: TOOLS,
-      messages,
-    })
-    const response = await stream.finalMessage()
-    messages.push({ role: "assistant", content: response.content })
-
-    const toolUses = response.content.filter(
-      (b): b is Anthropic.ToolUseBlock => b.type === "tool_use",
-    )
-    if (toolUses.length === 0) {
+    const calls = await chat.next()
+    if (calls.length === 0) {
       // A turn without an action is not a result; ask for one instead of giving up.
-      messages.push({ role: "user", content: "Take the next action with a tool, or call finish." })
+      chat.say("Take the next action with a tool, or call finish.")
       continue
     }
 
-    const results: Anthropic.ToolResultBlockParam[] = []
+    const results: { id: string; text: string }[] = []
     let finished = false
-    for (const tool of toolUses) {
-      const result = await execute(tool, page, run, seenUrls)
-      results.push({ type: "tool_result", tool_use_id: tool.id, content: result.text })
+    for (const call of calls) {
+      const result = await execute(call, page, run, seenUrls)
+      results.push({ id: call.id, text: result.text })
       if (result.finished) finished = true
     }
-    messages.push({ role: "user", content: results })
+    chat.answer(results)
     if (finished) return run
   }
   return run
 }
 
 async function execute(
-  tool: Anthropic.ToolUseBlock,
+  tool: ToolCall,
   page: AgentPage,
   run: AgentRun,
   seenUrls: Set<string>,

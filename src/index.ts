@@ -12,6 +12,7 @@ import { readFile, writeFile, mkdir } from "node:fs/promises"
 import path from "node:path"
 import { Solari } from "@solarisdk/browser"
 import { runEscape } from "./agent.js"
+import { configError, MODEL, PROVIDER } from "./model.js"
 import { deployGym, type GymDeployment } from "./gym.js"
 import { downloadReplay } from "./replay.js"
 import { escapeScore, grade } from "./score.js"
@@ -31,10 +32,12 @@ if (!apiKey) {
   console.error("Set SOLARI_API_KEY (get one at https://console.getsolari.com)")
   process.exit(1)
 }
-if (!process.env.ANTHROPIC_API_KEY) {
-  console.error("Set ANTHROPIC_API_KEY (the agent is driven by Claude)")
+const modelProblem = configError()
+if (modelProblem) {
+  console.error(modelProblem)
   process.exit(1)
 }
+console.log(`model: ${PROVIDER} ${MODEL}`)
 
 const args = process.argv.slice(2)
 const serviceName = args.find((a) => !a.startsWith("--"))
