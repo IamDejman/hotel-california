@@ -1,202 +1,302 @@
 /**
- * The Replay Theater: builds a static site (site/) from results/*.json where
- * every run is a scorecard with an embedded rrweb replay of the escape, and
- * every dark pattern the agent recorded is a marker pinned to the replay
- * timeline. Publish site/ anywhere static (GitHub Pages works).
+ * The Replay Theater: builds a static site (site/) from results/*.json. Each run
+ * gets a checkout bill (every dark pattern is an itemized charge against the
+ * Escape Score) and an embedded rrweb replay with each charge pinned to its
+ * moment on the timeline. Publish site/ anywhere static (GitHub Pages works).
  *
- *   npm run site
+ *   npm run site                       relative links only
+ *   SITE_URL=https://you.github.io/hc npm run site   adds link-preview tags
  */
-import { copyFile, mkdir, readFile, readdir, writeFile, access } from "node:fs/promises"
+import { copyFile, mkdir, writeFile, access } from "node:fs/promises"
 import path from "node:path"
-import { PATTERN_LABELS } from "./score.js"
-import type { PatternType, RunResult } from "./types.js"
+import { loadResults } from "./results.js"
+import { charges, PATTERN_LABELS } from "./score.js"
+import type { RunResult } from "./types.js"
 
 const RRWEB_CSS = "https://cdn.jsdelivr.net/npm/rrweb-player@1.0.0-alpha.4/dist/style.css"
 const RRWEB_JS = "https://cdn.jsdelivr.net/npm/rrweb-player@1.0.0-alpha.4/dist/index.js"
+const FONTS = "https://fonts.googleapis.com/css2?family=Limelight&display=swap"
+const SITE_URL = process.env.SITE_URL?.replace(/\/$/, "")
 
 const CSS = `
 * { margin: 0; box-sizing: border-box; }
 :root {
-  --bg: #0b0a14; --panel: #14121f; --line: #262336; --text: #ece9f4;
-  --muted: #9d97b5; --accent: #e8b44c; --good: #4ade80; --mid: #facc15; --bad: #f87171;
+  color-scheme: dark;
+  --lobby: #2b1216; --panel: #371a1f; --line: #57303a; --ivory: #f3eadb;
+  --muted: #c3aa9f; --brass: #d4ad62; --good: #a6dcae; --mid: #eccb74; --bad: #ff9a86;
+  --marquee: "Limelight", Georgia, serif;
 }
-body { background: var(--bg); color: var(--text); font-family: -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.55; }
-a { color: var(--accent); }
-.wrap { max-width: 880px; margin: 0 auto; padding: 24px; }
-header.site { padding: 56px 0 32px; }
-header.site h1 { font-size: 34px; letter-spacing: -0.5px; }
-header.site p { color: var(--muted); max-width: 60ch; margin-top: 8px; }
-.eyebrow { color: var(--accent); font-size: 12px; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; }
-.card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 22px; margin-bottom: 16px; display: flex; gap: 20px; align-items: center; text-decoration: none; color: var(--text); }
-.card:hover { border-color: var(--accent); }
-.score { font-size: 40px; font-weight: 800; min-width: 92px; text-align: center; }
+body { background: var(--lobby); color: var(--ivory); font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+a { color: var(--brass); text-underline-offset: 3px; }
+a:hover { color: var(--ivory); }
+:focus-visible { outline: 2px solid var(--brass); outline-offset: 3px; border-radius: 4px; }
+.wrap { max-width: 760px; margin: 0 auto; padding: 0 16px; }
+header.site { padding: 56px 0 28px; }
+.marquee { font-family: var(--marquee); font-weight: 400; font-size: clamp(40px, 9vw, 64px); line-height: 1.05; color: var(--brass); text-wrap: balance; }
+header.site p { color: var(--muted); max-width: 60ch; margin-top: 12px; text-wrap: pretty; }
+.back { display: inline-block; margin-bottom: 20px; font-size: 14px; }
+h1.run { font-size: 30px; line-height: 1.2; text-wrap: balance; }
+h2 { font-size: 20px; margin: 36px 0 12px; }
+.num { font-variant-numeric: tabular-nums; }
+
+.register { list-style: none; padding: 0; border-top: 1px solid var(--line); }
+.register a { display: grid; grid-template-columns: 96px 1fr; gap: 20px; padding: 22px 8px; border-bottom: 1px solid var(--line); color: var(--ivory); text-decoration: none; }
+.register a:hover { background: var(--panel); }
+.register .score { font-family: var(--marquee); font-size: 48px; line-height: 1; }
+.register .grade { font-size: 14px; color: var(--muted); margin-top: 6px; }
+.register h3 { font-size: 19px; }
+.register p { color: var(--muted); font-size: 14px; margin-top: 4px; }
 .grade-A, .grade-B { color: var(--good); }
 .grade-C, .grade-D { color: var(--mid); }
 .grade-F { color: var(--bad); }
-.card .meta { flex: 1; }
-.card h2 { font-size: 19px; }
-.card .sub { color: var(--muted); font-size: 13px; margin-top: 2px; }
-.chips { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
-.chip { font-size: 11px; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
-.chip.dark { border-color: #7f1d1d; color: #fca5a5; }
-.stats { display: flex; gap: 24px; margin: 18px 0 26px; flex-wrap: wrap; }
-.stat .n { font-size: 26px; font-weight: 800; }
-.stat .l { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
-.player-shell { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin: 20px 0; }
-#player { overflow: hidden; border-radius: 10px; }
-.rr-player { max-width: 100%; }
-.player-note { color: var(--muted); font-size: 13px; margin-top: 10px; }
-.evidence { list-style: none; }
-.evidence li { border-left: 3px solid var(--accent); padding: 8px 14px; margin-bottom: 10px; background: var(--panel); border-radius: 0 10px 10px 0; }
-.evidence .t { font-weight: 700; font-size: 14px; }
-.evidence .q { color: var(--muted); font-size: 13px; }
-.evidence button { background: none; border: 0; color: var(--accent); cursor: pointer; font-size: 12px; padding: 0; text-decoration: underline; }
-.marker { position: absolute; top: -3px; width: 6px; height: 12px; background: var(--bad); border-radius: 2px; cursor: pointer; z-index: 5; }
+
+.facts { display: flex; flex-wrap: wrap; gap: 12px 32px; margin: 20px 0 8px; }
+.facts dt { font-size: 13px; color: var(--muted); }
+.facts dd { font-size: 22px; font-weight: 700; }
+.facts .score dd { font-family: var(--marquee); font-weight: 400; font-size: 34px; line-height: 1.1; }
+
+.player-shell { margin: 28px 0 8px; }
+#player { min-height: 120px; }
+#player .rr-player { max-width: 100%; background: var(--panel); box-shadow: none; }
+#player .rr-controller { background: var(--panel); color: var(--ivory); }
+#player .rr-timeline__time { color: var(--muted); }
+.player-note { color: var(--muted); font-size: 14px; margin-top: 10px; }
 .rr-progress { position: relative; }
-footer.site { color: var(--muted); font-size: 12px; padding: 40px 0; }
-@media (max-width: 600px) { .card { flex-direction: column; align-items: flex-start; } .score { text-align: left; } }
+.marker { position: absolute; top: -4px; width: 8px; height: 14px; margin-left: -4px; padding: 0; border: 0; border-radius: 2px; background: var(--bad); cursor: pointer; z-index: 5; }
+.marker:hover { background: var(--ivory); }
+
+.bill { width: 100%; border-collapse: collapse; }
+.bill th { text-align: left; font-size: 13px; font-weight: 600; color: var(--muted); padding: 8px 0; border-bottom: 1px solid var(--line); }
+.bill td { padding: 14px 0; border-bottom: 1px dashed var(--line); vertical-align: top; }
+.bill .pts { text-align: right; white-space: nowrap; padding-left: 16px; font-variant-numeric: tabular-nums; }
+.bill .charge { font-weight: 600; }
+.bill .quote { color: var(--muted); font-size: 14px; margin-top: 4px; overflow-wrap: anywhere; }
+.bill button { margin-top: 8px; background: none; border: 1px solid var(--line); color: var(--brass); border-radius: 999px; padding: 4px 12px; font: inherit; font-size: 13px; cursor: pointer; touch-action: manipulation; }
+.bill button:hover { border-color: var(--brass); }
+.bill tfoot td { border-bottom: 0; padding-top: 10px; }
+.bill tfoot tr:last-child td { border-top: 2px solid var(--ivory); padding-top: 14px; font-size: 20px; font-weight: 700; }
+.session { color: var(--muted); font-size: 13px; margin-top: 24px; overflow-wrap: anywhere; }
+footer.site { color: var(--muted); font-size: 13px; padding: 48px 0; }
+@media (max-width: 520px) { .register a { grid-template-columns: 72px 1fr; gap: 14px; } .register .score { font-size: 38px; } }
+`
+
+const PLAYER_SCRIPT = `
+const run = JSON.parse(document.getElementById("run-data").textContent);
+const mount = document.getElementById("player");
+const motion = matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+
+async function boot() {
+  const res = await fetch(run.replay);
+  if (!res.ok) throw new Error("replay request failed: " + res.status);
+  const events = (await res.text()).split("\\n").filter(Boolean).map((l) => JSON.parse(l));
+  if (events.length < 2) throw new Error("replay is empty");
+  const start = events[0].timestamp;
+  const span = events[events.length - 1].timestamp - start;
+  const width = mount.clientWidth;
+  const player = new rrwebPlayer({
+    target: mount,
+    props: { events, autoPlay: false, width, height: Math.round(width * 0.62) },
+  });
+  // Open on the first real page instead of the blank tab the browser starts on.
+  const firstPage = events.find((e) => e.type === 4 && String(e.data.href).startsWith("http"));
+  if (firstPage) player.goto(firstPage.timestamp - start + 50, false);
+
+  const offsets = run.marks.map((m) => Math.max(0, Math.min(m.atMs - start, span)));
+  const watch = (i) => {
+    player.goto(offsets[i], true);
+    mount.scrollIntoView({ behavior: motion, block: "center" });
+  };
+  const bar = await waitFor(".rr-progress");
+  offsets.forEach((off, i) => {
+    const m = document.createElement("button");
+    m.className = "marker";
+    m.type = "button";
+    m.title = run.marks[i].label;
+    m.setAttribute("aria-label", "Jump to: " + run.marks[i].label);
+    m.style.left = (off / span) * 100 + "%";
+    m.addEventListener("click", (e) => { e.stopPropagation(); watch(i); });
+    bar.appendChild(m);
+  });
+  document.querySelectorAll("[data-mark]").forEach((btn) => {
+    btn.hidden = false;
+    btn.addEventListener("click", () => watch(Number(btn.dataset.mark)));
+  });
+}
+
+function waitFor(selector) {
+  return new Promise((resolve) => {
+    const tick = () => { const el = document.querySelector(selector); el ? resolve(el) : requestAnimationFrame(tick); };
+    tick();
+  });
+}
+
+boot().catch((err) => {
+  console.error(err);
+  const note = document.createElement("p");
+  note.className = "player-note";
+  note.textContent = "The replay did not load (" + err.message + "). Reload the page to try again.";
+  mount.replaceChildren(note);
+});
 `
 
 const esc = (s: string): string =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;")
 
-const slugOf = (r: RunResult): string =>
-  r.region === "direct" ? r.service : `${r.service}@${r.region}`
+/** Agent-written text, with the model's em dashes set as plain hyphens. */
+const prose = (s: string): string => esc(s.replace(/\s*\u2014\s*/g, " - "))
 
-function shell(title: string, body: string, extraHead = ""): string {
+const slugOf = (r: RunResult): string => (r.region === "direct" ? r.service : `${r.service}@${r.region}`)
+
+const nameOf = (r: RunResult): string => r.displayName ?? r.service
+
+const regionSuffix = (r: RunResult): string => (r.region === "direct" ? "" : ` from ${r.region.toUpperCase()}`)
+
+const dateOf = (iso: string): string => new Intl.DateTimeFormat("en", { dateStyle: "medium" }).format(new Date(iso))
+
+const seconds = (r: RunResult): number => Math.round(r.metrics.durationMs / 1000)
+
+const OUTCOME_LABELS: Record<RunResult["outcome"], string> = {
+  cancelled: "Cancelled",
+  blocked: "Blocked",
+  requires_human: "Needs a human",
+  gave_up: "Agent gave up",
+}
+
+interface Page {
+  title: string
+  description: string
+  /** Path of this page relative to the site root, for link-preview URLs. */
+  path: string
+  body: string
+  extraHead?: string
+}
+
+function shell(page: Page): string {
+  const preview = SITE_URL
+    ? `<meta property="og:url" content="${SITE_URL}/${page.path}">
+<meta property="og:image" content="${SITE_URL}/og.png">
+<meta name="twitter:card" content="summary_large_image">`
+    : ""
   return `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${esc(title)}</title>
+<meta name="theme-color" content="#2b1216">
+<title>${esc(page.title)}</title>
+<meta name="description" content="${esc(page.description)}">
+<meta property="og:title" content="${esc(page.title)}">
+<meta property="og:description" content="${esc(page.description)}">
+<meta property="og:type" content="website">
+${preview}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="${FONTS}">
 <style>${CSS}</style>
-${extraHead}
+${page.extraHead ?? ""}
 </head>
 <body>
-<div class="wrap">
-${body}
-<footer class="site">Hotel California: an AI agent that cancels subscriptions and grades the exit. Runs are against the account owner's own subscriptions; scores reflect what the agent was shown on the stated date. Built on Solari cloud browsers + sandboxes, driven by Claude.</footer>
-</div>
+<main class="wrap">
+${page.body}
+</main>
+<footer class="site wrap">Hotel California cancels subscriptions with an AI agent and scores how hard the company makes it. Every run is against the account owner's own subscription, and each score reflects what the agent was shown on that date. Built on <a href="https://getsolari.com">Solari</a> cloud browsers and sandboxes, driven by Claude. <a href="https://github.com/IamDejman/hotel-california">Source on GitHub</a>.</footer>
 </body>
 </html>
 `
 }
 
 function indexPage(results: RunResult[]): string {
-  const cards = results
+  const rows = results
     .map((r) => {
-      const patterns = [...new Set(r.patterns.map((p) => p.type))]
-      const chips = patterns
-        .map((t) => `<span class="chip dark">${esc(PATTERN_LABELS[t as PatternType])}</span>`)
-        .join("")
-      return `<a class="card" href="runs/${esc(slugOf(r))}.html">
-  <div class="score grade-${r.grade}">${r.score}<div style="font-size:13px">grade ${r.grade}</div></div>
-  <div class="meta">
-    <h2>${esc(r.service)}${r.region !== "direct" ? ` <span class="chip">${esc(r.region.toUpperCase())} egress</span>` : ""}</h2>
-    <div class="sub">${esc(r.outcome)} in ${r.metrics.clicks} clicks and ${Math.round(r.metrics.durationMs / 1000)}s on ${esc(r.ranAt.slice(0, 10))}</div>
-    <div class="chips">${chips || '<span class="chip">no dark patterns observed</span>'}</div>
+      const kinds = new Set(r.patterns.map((p) => p.type)).size
+      return `<li><a href="runs/${esc(slugOf(r))}.html">
+  <div><div class="score num grade-${r.grade}">${r.score}</div><div class="grade">Grade ${r.grade}</div></div>
+  <div>
+    <h3>${esc(nameOf(r))}${esc(regionSuffix(r))}</h3>
+    <p>${OUTCOME_LABELS[r.outcome]} after ${r.metrics.clicks} clicks and ${seconds(r)}s. ${r.patterns.length} dark patterns logged across ${kinds} kinds. ${dateOf(r.ranAt)}.</p>
   </div>
-</a>`
+</a></li>`
     })
     .join("\n")
   const body = `<header class="site">
-  <div class="eyebrow">The Cancellation Difficulty Index</div>
-  <h1>Hotel California</h1>
-  <p>You can check out any time you like. An AI agent checked whether you can actually leave: it ran each cancellation itself, recorded every dark pattern it was hit with, and kept the session replay as the receipt. Lower score = harder to escape.</p>
+  <h1 class="marquee">Hotel California</h1>
+  <p>An AI agent tries to cancel each subscription itself, bills the company for every dark pattern it meets on the way out, and keeps the session replay as the receipt. Every checkout starts at 100. The lower the score, the harder it is to leave.</p>
 </header>
-${cards || "<p>No runs yet. <code>npm start -- gym</code> to score the practice gym.</p>"}`
-  return shell("Hotel California: Cancellation Difficulty Index", body)
+${rows ? `<ol class="register">${rows}</ol>` : `<p>No runs yet. Run <code>npm start -- gym</code> to score the practice gym, then <code>npm run site</code>.</p>`}`
+  return shell({
+    title: "Hotel California: the Cancellation Difficulty Index",
+    description: "An AI agent cancels subscriptions, bills companies for every dark pattern on the way out, and keeps the replay as the receipt.",
+    path: "",
+    body,
+  })
 }
 
 function runPage(r: RunResult, hasReplay: boolean): string {
-  const slug = slugOf(r)
-  const evidence = r.patterns
-    .map(
-      (p, i) => `<li>
-  <div class="t">${esc(PATTERN_LABELS[p.type])}</div>
-  <div class="q">"${esc(p.evidence)}"</div>
-  ${hasReplay ? `<button data-marker="${i}">jump to this moment in the replay</button>` : ""}
-</li>`,
-    )
+  const bill = charges(r.metrics, r.patterns)
+  const total = bill.reduce((sum, c) => sum + c.points, 0)
+  const rows = bill
+    .map((c) => {
+      const p = c.pattern === undefined ? undefined : r.patterns[c.pattern]
+      const watch = p && hasReplay
+        ? `<button type="button" data-mark="${c.pattern}" hidden>Watch it happen</button>`
+        : ""
+      return `<tr>
+  <td><div class="charge">${esc(c.label)}</div>${p ? `<p class="quote">${prose(p.evidence)}</p>` : ""}${watch}</td>
+  <td class="pts">&minus;${c.points}</td>
+</tr>`
+    })
     .join("\n")
 
-  const playerBlock = hasReplay
-    ? `<div class="player-shell">
+  const player = hasReplay
+    ? `<section class="player-shell" aria-label="Session replay">
   <div id="player"></div>
-  <p class="player-note">DOM-level session replay (rrweb), recorded by the Solari cloud browser. Red ticks on the timeline are the moments the agent recorded a dark pattern.</p>
-</div>
+  <p class="player-note">DOM-level replay recorded by the Solari cloud browser. Red ticks on the timeline mark each charge on the bill.</p>
+</section>
+<script type="application/json" id="run-data">${JSON.stringify({
+        replay: `../replays/${slugOf(r)}.ndjson`,
+        marks: r.patterns.map((p) => ({ atMs: p.atMs, label: PATTERN_LABELS[p.type] })),
+      }).replace(/</g, "\\u003c")}</script>
 <script src="${RRWEB_JS}"></script>
-<script>
-const PATTERNS = ${JSON.stringify(r.patterns.map((p) => ({ atMs: p.atMs, label: PATTERN_LABELS[p.type] })))};
-async function boot() {
-  const res = await fetch("../replays/${slug}.ndjson");
-  const text = await res.text();
-  const events = text.split("\\n").filter(Boolean).map((l) => JSON.parse(l));
-  if (events.length === 0) return;
-  const start = events[0].timestamp;
-  const end = events[events.length - 1].timestamp;
-  const player = new rrwebPlayer({
-    target: document.getElementById("player"),
-    props: { events, autoPlay: false, width: Math.min(820, innerWidth - 80) },
-  });
-  const offsets = PATTERNS.map((p) => Math.max(0, Math.min(p.atMs - start, end - start)));
-  setTimeout(() => {
-    const bar = document.querySelector(".rr-progress");
-    if (!bar) return;
-    offsets.forEach((off, i) => {
-      const m = document.createElement("div");
-      m.className = "marker";
-      m.title = PATTERNS[i].label;
-      m.style.left = ((off / (end - start)) * 100) + "%";
-      m.addEventListener("click", (e) => { e.stopPropagation(); player.goto(off); });
-      bar.appendChild(m);
-    });
-  }, 500);
-  document.querySelectorAll("[data-marker]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      player.goto(offsets[Number(btn.dataset.marker)]);
-      player.play();
-      document.getElementById("player").scrollIntoView({ behavior: "smooth" });
-    });
-  });
-}
-boot().catch((err) => { console.error(err); });
-</script>`
-    : `<div class="player-shell"><p class="player-note">No replay file was available for this run.</p></div>`
+<script>${PLAYER_SCRIPT}</script>`
+    : `<p class="player-note">No replay was saved for this run.</p>`
 
   const body = `<header class="site">
-  <div class="eyebrow"><a href="../index.html">Cancellation Difficulty Index</a></div>
-  <h1>${esc(r.service)}${r.region !== "direct" ? ` (${esc(r.region.toUpperCase())} egress)` : ""}</h1>
-  <p>${esc(r.summary)}</p>
+  <a class="back" href="../index.html">All checkouts</a>
+  <h1 class="run">${esc(nameOf(r))}${esc(regionSuffix(r))}</h1>
+  <p>${prose(r.summary)}</p>
+  <dl class="facts">
+    <div class="score"><dt>Escape Score</dt><dd class="num grade-${r.grade}">${r.score} <span class="grade">${r.grade}</span></dd></div>
+    <div><dt>Outcome</dt><dd>${OUTCOME_LABELS[r.outcome]}</dd></div>
+    <div><dt>Clicks</dt><dd class="num">${r.metrics.clicks}</dd></div>
+    <div><dt>Time</dt><dd class="num">${seconds(r)}s</dd></div>
+  </dl>
 </header>
-<div class="stats">
-  <div class="stat"><div class="n grade-${r.grade}">${r.score}/100</div><div class="l">Escape Score (${r.grade})</div></div>
-  <div class="stat"><div class="n">${esc(r.outcome)}</div><div class="l">Outcome</div></div>
-  <div class="stat"><div class="n">${r.metrics.clicks}</div><div class="l">Clicks</div></div>
-  <div class="stat"><div class="n">${Math.round(r.metrics.durationMs / 1000)}s</div><div class="l">Time</div></div>
-  <div class="stat"><div class="n">${r.patterns.length}</div><div class="l">Dark patterns</div></div>
-</div>
-${playerBlock}
-<h2 style="margin: 26px 0 12px">What the agent was hit with</h2>
-<ul class="evidence">${evidence || "<li><div class='t'>Nothing. A clean exit.</div></li>"}</ul>
-<p class="player-note" style="margin-top:22px">Session <code>${esc(r.sessionId)}</code>, run ${esc(r.ranAt)}.</p>`
-  return shell(`${r.service}: Escape Score ${r.score}`, body, `<link rel="stylesheet" href="${RRWEB_CSS}">`)
+${player}
+<h2>Checkout bill</h2>
+<table class="bill">
+  <thead><tr><th scope="col">Charge</th><th scope="col" class="pts">Points</th></tr></thead>
+  <tbody>
+${rows || `<tr><td>No charges. A clean exit.</td><td class="pts">0</td></tr>`}
+  </tbody>
+  <tfoot>
+    <tr><td>Starting balance</td><td class="pts">100</td></tr>
+    <tr><td>Total charges</td><td class="pts">&minus;${total}</td></tr>
+    <tr><td>Escape Score</td><td class="pts grade-${r.grade}">${r.score}</td></tr>
+  </tfoot>
+</table>
+<p class="session">Run on ${dateOf(r.ranAt)}. Solari session <code title="${esc(r.sessionId)}">${esc(r.sessionId.slice(0, 16))}…</code></p>`
+
+  return shell({
+    title: `${nameOf(r)}${regionSuffix(r)}: Escape Score ${r.score} (${r.grade})`,
+    description: `${r.patterns.length} dark patterns logged on the way out. Watch the replay and read the itemized bill.`,
+    path: `runs/${slugOf(r)}.html`,
+    body,
+    extraHead: `<link rel="stylesheet" href="${RRWEB_CSS}">`,
+  })
 }
 
 export async function buildSite(): Promise<void> {
-  let files: string[] = []
-  try {
-    files = (await readdir("results")).filter((f) => f.endsWith(".json"))
-  } catch {
-    // no results yet
-  }
-  const results: RunResult[] = []
-  for (const f of files) {
-    results.push(JSON.parse(await readFile(path.join("results", f), "utf8")) as RunResult)
-  }
-  results.sort((a, b) => a.score - b.score)
-
+  const results = await loadResults()
   await mkdir("site/runs", { recursive: true })
   await mkdir("site/replays", { recursive: true })
 
@@ -209,7 +309,7 @@ export async function buildSite(): Promise<void> {
         await copyFile(r.replayFile, path.join("site/replays", `${slug}.ndjson`))
         hasReplay = true
       } catch {
-        // replay listed in the result but not on disk; page degrades gracefully
+        // replay listed in the result but not on disk; the page says so
       }
     }
     await writeFile(path.join("site/runs", `${slug}.html`), runPage(r, hasReplay))

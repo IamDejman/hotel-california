@@ -1,5 +1,6 @@
 {
   "service": "gym",
+  "displayName": "Streamly+ (practice gym)",
   "region": "direct",
   "startUrl": "https://e365d496137d897abf0d-8080.preview.getsolari.com/index.html",
   "ranAt": "2026-09-30T20:31:47.019Z",
@@ -36,7 +37,7 @@
     },
     {
       "type": "retention_offer",
-      "evidence": "\"50% off for 3 months — Keep everything you love for just $7.99 a month.\"",
+      "evidence": "\"50% off for 3 months \u2014 Keep everything you love for just $7.99 a month.\"",
       "url": "https://e365d496137d897abf0d-8080.preview.getsolari.com/offer.html",
       "step": 8,
       "atMs": 1790800238549
@@ -78,7 +79,7 @@
     },
     {
       "type": "artificial_delay",
-      "evidence": "\"Connecting you to a cancellation specialist — Please stay on this page. A specialist is reviewing your account...\" - fake wait screen before allowing cancellation to proceed.",
+      "evidence": "\"Connecting you to a cancellation specialist \u2014 Please stay on this page. A specialist is reviewing your account...\" - fake wait screen before allowing cancellation to proceed.",
       "url": "https://e365d496137d897abf0d-8080.preview.getsolari.com/wait.html",
       "step": 16,
       "atMs": 1790800272102

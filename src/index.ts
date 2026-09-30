@@ -18,6 +18,7 @@ import { buildLeaderboard } from "./report.js"
 import type { RunResult } from "./types.js"
 
 interface ServiceConfig {
+  name?: string
   startUrl: string
   profile?: string
   proxy?: string
@@ -57,7 +58,7 @@ if (serviceName === "gym") {
   // the page to the path rather than to the end of the string.
   const start = new URL(gym.url)
   start.pathname = `${start.pathname.replace(/\/$/, "")}/index.html`
-  config = { startUrl: start.toString() }
+  config = { name: "Streamly+ (practice gym)", startUrl: start.toString() }
 } else {
   const registry = JSON.parse(await readFile("services.json", "utf8")) as Record<
     string,
@@ -124,6 +125,7 @@ async function runOnce(region: string | null): Promise<RunResult> {
 
   return {
     service,
+    displayName: config.name ?? service,
     region: regionLabel,
     startUrl: stripPreviewToken(config.startUrl),
     ranAt: new Date().toISOString(),

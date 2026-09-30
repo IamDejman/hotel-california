@@ -1,6 +1,6 @@
 /**
- * Download the rrweb session replay: the receipt that proves what the flow
- * actually did. Uploads land asynchronously after release, so poll patiently.
+ * Download the rrweb session replay: the receipt that proves what the flow did.
+ * Uploads land asynchronously after release, so poll patiently.
  */
 import { writeFile, mkdir } from "node:fs/promises"
 import path from "node:path"

@@ -5,7 +5,7 @@ cancellation itself; every run has an rrweb session replay as the receipt.
 
 | Service | Escape Score | Grade | Outcome | Clicks | Time | Dark patterns observed |
 | --- | --- | --- | --- | --- | --- | --- |
-| gym | 26 | F | cancelled | 8 | 115s | hidden_path, retention_offer, forced_survey, fake_urgency, misdirection, guilt_trip, confirmshaming, repeated_confirmation, artificial_delay, price_hike_threat |
+| Streamly+ (practice gym) | 26 | F | cancelled | 8 | 115s | hidden_path, retention_offer, forced_survey, fake_urgency, misdirection, guilt_trip, confirmshaming, repeated_confirmation, artificial_delay, price_hike_threat |
 
 ## Pattern legend
 

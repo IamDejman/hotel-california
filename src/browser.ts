@@ -2,7 +2,7 @@
  * Page observation for the agent. We tag every interactive element with a
  * stable ref, then hand the model a compact digest instead of raw HTML.
  * Playwright-compatible page from @solarisdk/browser, typed structurally so we
- * only depend on the handful of methods we actually call.
+ * only depend on the methods we call.
  */
 
 export interface AgentPage {

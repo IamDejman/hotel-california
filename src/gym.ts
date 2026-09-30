@@ -36,7 +36,7 @@ export async function deployGym(apiKey: string): Promise<GymDeployment> {
     })
     const { url } = await sandbox.previewUrl(PORT)
 
-    // Wait until the preview actually serves before pointing an agent at it.
+    // Wait until the preview serves before pointing an agent at it.
     for (let i = 0; i < 15; i++) {
       await new Promise((r) => setTimeout(r, 1000))
       try {

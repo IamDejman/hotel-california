@@ -2,30 +2,19 @@
  * Build LEADERBOARD.md from results/*.json: the Cancellation Difficulty Index,
  * worst offenders first.
  */
-import { readFile, readdir, writeFile } from "node:fs/promises"
-import path from "node:path"
+import { writeFile } from "node:fs/promises"
+import { loadResults } from "./results.js"
 import { PATTERN_LABELS } from "./score.js"
-import type { RunResult } from "./types.js"
 
 export async function buildLeaderboard(): Promise<void> {
-  let files: string[]
-  try {
-    files = (await readdir("results")).filter((f) => f.endsWith(".json"))
-  } catch {
-    files = []
-  }
-  const results: RunResult[] = []
-  for (const f of files) {
-    results.push(JSON.parse(await readFile(path.join("results", f), "utf8")) as RunResult)
-  }
-  results.sort((a, b) => a.score - b.score)
+  const results = await loadResults()
 
   const rows = results.map((r) => {
     const patterns =
       r.patterns.length === 0
         ? "-"
         : [...new Set(r.patterns.map((p) => p.type))].join(", ")
-    return `| ${r.service} | ${r.score} | ${r.grade} | ${r.outcome} | ${r.metrics.clicks} | ${Math.round(r.metrics.durationMs / 1000)}s | ${patterns} |`
+    return `| ${r.displayName ?? r.service} | ${r.score} | ${r.grade} | ${r.outcome} | ${r.metrics.clicks} | ${Math.round(r.metrics.durationMs / 1000)}s | ${patterns} |`
   })
 
   const legend = Object.entries(PATTERN_LABELS)
