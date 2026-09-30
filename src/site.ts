@@ -35,7 +35,7 @@ header.site { padding: 56px 0 28px; }
 .marquee { font-family: var(--marquee); font-weight: 400; font-size: clamp(40px, 9vw, 64px); line-height: 1.05; color: var(--brass); text-wrap: balance; }
 header.site p { color: var(--muted); max-width: 60ch; margin-top: 12px; text-wrap: pretty; }
 .back { display: inline-block; margin-bottom: 20px; font-size: 14px; }
-h1.run { font-size: 30px; line-height: 1.2; text-wrap: balance; }
+h1.run { font-size: 30px; line-height: 1.2; text-wrap: balance; overflow-wrap: anywhere; }
 h2 { font-size: 20px; margin: 36px 0 12px; }
 .num { font-variant-numeric: tabular-nums; }
 
@@ -44,7 +44,7 @@ h2 { font-size: 20px; margin: 36px 0 12px; }
 .register a:hover { background: var(--panel); }
 .register .score { font-family: var(--marquee); font-size: 48px; line-height: 1; }
 .register .grade { font-size: 14px; color: var(--muted); margin-top: 6px; }
-.register h3 { font-size: 19px; }
+.register h2 { font-size: 19px; margin: 0; overflow-wrap: anywhere; }
 .register p { color: var(--muted); font-size: 14px; margin-top: 4px; }
 .grade-A, .grade-B { color: var(--good); }
 .grade-C, .grade-D { color: var(--mid); }
@@ -62,8 +62,9 @@ h2 { font-size: 20px; margin: 36px 0 12px; }
 #player .rr-timeline__time { color: var(--muted); }
 .player-note { color: var(--muted); font-size: 14px; margin-top: 10px; }
 .rr-progress { position: relative; }
-.marker { position: absolute; top: -4px; width: 8px; height: 14px; margin-left: -4px; padding: 0; border: 0; border-radius: 2px; background: var(--bad); cursor: pointer; z-index: 5; }
-.marker:hover { background: var(--ivory); }
+.marker { position: absolute; top: -9px; width: 20px; height: 24px; margin-left: -10px; padding: 0; border: 0; background: none; cursor: pointer; z-index: 5; touch-action: manipulation; }
+.marker::before { content: ""; position: absolute; left: 6px; top: 5px; width: 8px; height: 14px; border-radius: 2px; background: var(--bad); }
+.marker:hover::before { background: var(--ivory); }
 
 .bill { width: 100%; border-collapse: collapse; }
 .bill th { text-align: left; font-size: 13px; font-weight: 600; color: var(--muted); padding: 8px 0; border-bottom: 1px solid var(--line); }
@@ -200,7 +201,7 @@ ${page.extraHead ?? ""}
 <main class="wrap">
 ${page.body}
 </main>
-<footer class="site wrap">Hotel California cancels subscriptions with an AI agent and scores how hard the company makes it. Every run is against the account owner's own subscription, and each score reflects what the agent was shown on that date. Built on <a href="https://getsolari.com">Solari</a> cloud browsers and sandboxes, driven by Claude. <a href="https://github.com/IamDejman/hotel-california">Source on GitHub</a>.</footer>
+<footer class="site wrap">Hotel California cancels subscriptions with an AI agent and scores how hard the company makes it. Every run is against the account owner’s own subscription, and each score reflects what the agent was shown on that date. Built on <a href="https://getsolari.com">Solari</a> cloud browsers and sandboxes, driven by Claude. <a href="https://github.com/IamDejman/hotel-california">Source on GitHub</a>.</footer>
 </body>
 </html>
 `
@@ -213,7 +214,7 @@ function indexPage(results: RunResult[]): string {
       return `<li><a href="runs/${esc(slugOf(r))}.html">
   <div><div class="score num grade-${r.grade}">${r.score}</div><div class="grade">Grade ${r.grade}</div></div>
   <div>
-    <h3>${esc(nameOf(r))}${esc(regionSuffix(r))}</h3>
+    <h2>${esc(nameOf(r))}${esc(regionSuffix(r))}</h2>
     <p>${OUTCOME_LABELS[r.outcome]} after ${r.metrics.clicks} clicks and ${seconds(r)}s. ${r.patterns.length} dark patterns logged across ${kinds} kinds. ${dateOf(r.ranAt)}.</p>
   </div>
 </a></li>`
@@ -239,7 +240,7 @@ function runPage(r: RunResult, hasReplay: boolean): string {
     .map((c) => {
       const p = c.pattern === undefined ? undefined : r.patterns[c.pattern]
       const watch = p && hasReplay
-        ? `<button type="button" data-mark="${c.pattern}" hidden>Watch it happen</button>`
+        ? `<button type="button" data-mark="${c.pattern}" aria-label="Watch it happen: ${esc(c.label)}" hidden>Watch it happen</button>`
         : ""
       return `<tr>
   <td><div class="charge">${esc(c.label)}</div>${p ? `<p class="quote">${prose(p.evidence)}</p>` : ""}${watch}</td>
@@ -251,7 +252,7 @@ function runPage(r: RunResult, hasReplay: boolean): string {
   const player = hasReplay
     ? `<section class="player-shell" aria-label="Session replay">
   <div id="player"></div>
-  <p class="player-note">DOM-level replay recorded by the Solari cloud browser. Red ticks on the timeline mark each charge on the bill.</p>
+  <p class="player-note">DOM-level replay recorded by the Solari cloud browser. Each tick on the timeline marks a charge on the bill.</p>
 </section>
 <script type="application/json" id="run-data">${JSON.stringify({
         replay: `../replays/${slugOf(r)}.ndjson`,
@@ -284,7 +285,7 @@ ${rows || `<tr><td>No charges. A clean exit.</td><td class="pts">0</td></tr>`}
     <tr><td>Escape Score</td><td class="pts grade-${r.grade}">${r.score}</td></tr>
   </tfoot>
 </table>
-<h2>The agent's report</h2>
+<h2>The agent’s report</h2>
 <p class="report">${prose(r.summary)}</p>
 <p class="session">Run on ${dateOf(r.ranAt)}. Solari session <code title="${esc(r.sessionId)}">${esc(r.sessionId.slice(0, 16))}…</code></p>`
 
@@ -293,7 +294,8 @@ ${rows || `<tr><td>No charges. A clean exit.</td><td class="pts">0</td></tr>`}
     description: `${r.patterns.length} dark patterns logged on the way out. Watch the replay and read the itemized bill.`,
     path: `runs/${slugOf(r)}.html`,
     body,
-    extraHead: `<link rel="stylesheet" href="${RRWEB_CSS}">`,
+    extraHead: `<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="${RRWEB_CSS}">`,
   })
 }
 

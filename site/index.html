@@ -32,7 +32,7 @@ header.site { padding: 56px 0 28px; }
 .marquee { font-family: var(--marquee); font-weight: 400; font-size: clamp(40px, 9vw, 64px); line-height: 1.05; color: var(--brass); text-wrap: balance; }
 header.site p { color: var(--muted); max-width: 60ch; margin-top: 12px; text-wrap: pretty; }
 .back { display: inline-block; margin-bottom: 20px; font-size: 14px; }
-h1.run { font-size: 30px; line-height: 1.2; text-wrap: balance; }
+h1.run { font-size: 30px; line-height: 1.2; text-wrap: balance; overflow-wrap: anywhere; }
 h2 { font-size: 20px; margin: 36px 0 12px; }
 .num { font-variant-numeric: tabular-nums; }
 
@@ -41,7 +41,7 @@ h2 { font-size: 20px; margin: 36px 0 12px; }
 .register a:hover { background: var(--panel); }
 .register .score { font-family: var(--marquee); font-size: 48px; line-height: 1; }
 .register .grade { font-size: 14px; color: var(--muted); margin-top: 6px; }
-.register h3 { font-size: 19px; }
+.register h2 { font-size: 19px; margin: 0; overflow-wrap: anywhere; }
 .register p { color: var(--muted); font-size: 14px; margin-top: 4px; }
 .grade-A, .grade-B { color: var(--good); }
 .grade-C, .grade-D { color: var(--mid); }
@@ -59,8 +59,9 @@ h2 { font-size: 20px; margin: 36px 0 12px; }
 #player .rr-timeline__time { color: var(--muted); }
 .player-note { color: var(--muted); font-size: 14px; margin-top: 10px; }
 .rr-progress { position: relative; }
-.marker { position: absolute; top: -4px; width: 8px; height: 14px; margin-left: -4px; padding: 0; border: 0; border-radius: 2px; background: var(--bad); cursor: pointer; z-index: 5; }
-.marker:hover { background: var(--ivory); }
+.marker { position: absolute; top: -9px; width: 20px; height: 24px; margin-left: -10px; padding: 0; border: 0; background: none; cursor: pointer; z-index: 5; touch-action: manipulation; }
+.marker::before { content: ""; position: absolute; left: 6px; top: 5px; width: 8px; height: 14px; border-radius: 2px; background: var(--bad); }
+.marker:hover::before { background: var(--ivory); }
 
 .bill { width: 100%; border-collapse: collapse; }
 .bill th { text-align: left; font-size: 13px; font-weight: 600; color: var(--muted); padding: 8px 0; border-bottom: 1px solid var(--line); }
@@ -72,6 +73,7 @@ h2 { font-size: 20px; margin: 36px 0 12px; }
 .bill button:hover { border-color: var(--brass); }
 .bill tfoot td { border-bottom: 0; padding-top: 10px; }
 .bill tfoot tr:last-child td { border-top: 2px solid var(--ivory); padding-top: 14px; font-size: 20px; font-weight: 700; }
+.report { color: var(--muted); max-width: 65ch; }
 .session { color: var(--muted); font-size: 13px; margin-top: 24px; overflow-wrap: anywhere; }
 footer.site { color: var(--muted); font-size: 13px; padding: 48px 0; }
 @media (max-width: 520px) { .register a { grid-template-columns: 72px 1fr; gap: 14px; } .register .score { font-size: 38px; } }
@@ -87,11 +89,11 @@ footer.site { color: var(--muted); font-size: 13px; padding: 48px 0; }
 <ol class="register"><li><a href="runs/gym.html">
   <div><div class="score num grade-F">26</div><div class="grade">Grade F</div></div>
   <div>
-    <h3>Streamly+ (practice gym)</h3>
+    <h2>Streamly+ (practice gym)</h2>
     <p>Cancelled after 8 clicks and 115s. 12 dark patterns logged across 10 kinds. Sep 30, 2026.</p>
   </div>
 </a></li></ol>
 </main>
-<footer class="site wrap">Hotel California cancels subscriptions with an AI agent and scores how hard the company makes it. Every run is against the account owner's own subscription, and each score reflects what the agent was shown on that date. Built on <a href="https://getsolari.com">Solari</a> cloud browsers and sandboxes, driven by Claude. <a href="https://github.com/IamDejman/hotel-california">Source on GitHub</a>.</footer>
+<footer class="site wrap">Hotel California cancels subscriptions with an AI agent and scores how hard the company makes it. Every run is against the account owner’s own subscription, and each score reflects what the agent was shown on that date. Built on <a href="https://getsolari.com">Solari</a> cloud browsers and sandboxes, driven by Claude. <a href="https://github.com/IamDejman/hotel-california">Source on GitHub</a>.</footer>
 </body>
 </html>
