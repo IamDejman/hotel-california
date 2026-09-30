@@ -55,7 +55,14 @@ footer.site { color: var(--muted); font-size: 12px; padding: 40px 0; }
   <h1>Hotel California</h1>
   <p>You can check out any time you like. An AI agent checked whether you can actually leave: it ran each cancellation itself, recorded every dark pattern it was hit with, and kept the session replay as the receipt. Lower score = harder to escape.</p>
 </header>
-<p>No runs yet. <code>npm start -- gym</code> to score the practice gym.</p>
+<a class="card" href="runs/gym.html">
+  <div class="score grade-F">26<div style="font-size:13px">grade F</div></div>
+  <div class="meta">
+    <h2>gym</h2>
+    <div class="sub">cancelled in 8 clicks and 115s on 2026-09-30</div>
+    <div class="chips"><span class="chip dark">Hidden cancellation path</span><span class="chip dark">Retention offer wall</span><span class="chip dark">Mandatory exit survey</span><span class="chip dark">Fake urgency or countdown</span><span class="chip dark">Visual misdirection (keep-button styled over cancel)</span><span class="chip dark">Guilt-trip screen</span><span class="chip dark">Confirmshaming button copy</span><span class="chip dark">Repeated are-you-sure confirmations</span><span class="chip dark">Artificial waiting or fake processing</span><span class="chip dark">Threats of losing grandfathered pricing</span></div>
+  </div>
+</a>
 <footer class="site">Hotel California: an AI agent that cancels subscriptions and grades the exit. Runs are against the account owner's own subscriptions; scores reflect what the agent was shown on the stated date. Built on Solari cloud browsers + sandboxes, driven by Claude.</footer>
 </div>
 </body>

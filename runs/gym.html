@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>gym: Escape Score 26</title>
+<style>
+* { margin: 0; box-sizing: border-box; }
+:root {
+  --bg: #0b0a14; --panel: #14121f; --line: #262336; --text: #ece9f4;
+  --muted: #9d97b5; --accent: #e8b44c; --good: #4ade80; --mid: #facc15; --bad: #f87171;
+}
+body { background: var(--bg); color: var(--text); font-family: -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.55; }
+a { color: var(--accent); }
+.wrap { max-width: 880px; margin: 0 auto; padding: 24px; }
+header.site { padding: 56px 0 32px; }
+header.site h1 { font-size: 34px; letter-spacing: -0.5px; }
+header.site p { color: var(--muted); max-width: 60ch; margin-top: 8px; }
+.eyebrow { color: var(--accent); font-size: 12px; text-transform: uppercase; letter-spacing: 2px; font-weight: 700; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 22px; margin-bottom: 16px; display: flex; gap: 20px; align-items: center; text-decoration: none; color: var(--text); }
+.card:hover { border-color: var(--accent); }
+.score { font-size: 40px; font-weight: 800; min-width: 92px; text-align: center; }
+.grade-A, .grade-B { color: var(--good); }
+.grade-C, .grade-D { color: var(--mid); }
+.grade-F { color: var(--bad); }
+.card .meta { flex: 1; }
+.card h2 { font-size: 19px; }
+.card .sub { color: var(--muted); font-size: 13px; margin-top: 2px; }
+.chips { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font-size: 11px; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
+.chip.dark { border-color: #7f1d1d; color: #fca5a5; }
+.stats { display: flex; gap: 24px; margin: 18px 0 26px; flex-wrap: wrap; }
+.stat .n { font-size: 26px; font-weight: 800; }
+.stat .l { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+.player-shell { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin: 20px 0; }
+#player { overflow: hidden; border-radius: 10px; }
+.rr-player { max-width: 100%; }
+.player-note { color: var(--muted); font-size: 13px; margin-top: 10px; }
+.evidence { list-style: none; }
+.evidence li { border-left: 3px solid var(--accent); padding: 8px 14px; margin-bottom: 10px; background: var(--panel); border-radius: 0 10px 10px 0; }
+.evidence .t { font-weight: 700; font-size: 14px; }
+.evidence .q { color: var(--muted); font-size: 13px; }
+.evidence button { background: none; border: 0; color: var(--accent); cursor: pointer; font-size: 12px; padding: 0; text-decoration: underline; }
+.marker { position: absolute; top: -3px; width: 6px; height: 12px; background: var(--bad); border-radius: 2px; cursor: pointer; z-index: 5; }
+.rr-progress { position: relative; }
+footer.site { color: var(--muted); font-size: 12px; padding: 40px 0; }
+@media (max-width: 600px) { .card { flex-direction: column; align-items: flex-start; } .score { text-align: left; } }
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/rrweb-player@1.0.0-alpha.4/dist/style.css">
+</head>
+<body>
+<div class="wrap">
+<header class="site">
+  <div class="eyebrow"><a href="../index.html">Cancellation Difficulty Index</a></div>
+  <h1>gym</h1>
+  <p>Successfully cancelled the Streamly+ subscription. Confirmation: &quot;Your Streamly+ membership is now cancelled. You have access until Sep 14, and you will not be billed again. Confirmation code: HC-2481-ESCAPED.&quot; The cancellation flow contained 10 distinct dark patterns: hidden cancellation link buried below retention offers, forced survey requiring a reason before proceeding, two retention offers (pause membership and 50% discount), fake urgency countdown timer on the discount, misdirection with visually dominant keep-subscription buttons, confirmshaming language (&quot;Yes, take it all away from me&quot;), a guilt trip about losing watchlist and unfinished shows, an artificial delay pretending to connect to a &quot;cancellation specialist,&quot; repeated confirmation screens (at least two are-you-sure pages), and a price hike threat warning about losing grandfathered pricing forever.</p>
+</header>
+<div class="stats">
+  <div class="stat"><div class="n grade-F">26/100</div><div class="l">Escape Score (F)</div></div>
+  <div class="stat"><div class="n">cancelled</div><div class="l">Outcome</div></div>
+  <div class="stat"><div class="n">8</div><div class="l">Clicks</div></div>
+  <div class="stat"><div class="n">115s</div><div class="l">Time</div></div>
+  <div class="stat"><div class="n">12</div><div class="l">Dark patterns</div></div>
+</div>
+<div class="player-shell">
+  <div id="player"></div>
+  <p class="player-note">DOM-level session replay (rrweb), recorded by the Solari cloud browser. Red ticks on the timeline are the moments the agent recorded a dark pattern.</p>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/rrweb-player@1.0.0-alpha.4/dist/index.js"></script>
+<script>
+const PATTERNS = [{"atMs":1790800207652,"label":"Hidden cancellation path"},{"atMs":1790800211179,"label":"Retention offer wall"},{"atMs":1790800221272,"label":"Mandatory exit survey"},{"atMs":1790800238549,"label":"Retention offer wall"},{"atMs":1790800241314,"label":"Fake urgency or countdown"},{"atMs":1790800244032,"label":"Visual misdirection (keep-button styled over cancel)"},{"atMs":1790800255643,"label":"Guilt-trip screen"},{"atMs":1790800258652,"label":"Confirmshaming button copy"},{"atMs":1790800262395,"label":"Repeated are-you-sure confirmations"},{"atMs":1790800272102,"label":"Artificial waiting or fake processing"},{"atMs":1790800282131,"label":"Threats of losing grandfathered pricing"},{"atMs":1790800286473,"label":"Repeated are-you-sure confirmations"}];
+async function boot() {
+  const res = await fetch("../replays/gym.ndjson");
+  const text = await res.text();
+  const events = text.split("\n").filter(Boolean).map((l) => JSON.parse(l));
+  if (events.length === 0) return;
+  const start = events[0].timestamp;
+  const end = events[events.length - 1].timestamp;
+  const player = new rrwebPlayer({
+    target: document.getElementById("player"),
+    props: { events, autoPlay: false, width: Math.min(820, innerWidth - 80) },
+  });
+  const offsets = PATTERNS.map((p) => Math.max(0, Math.min(p.atMs - start, end - start)));
+  setTimeout(() => {
+    const bar = document.querySelector(".rr-progress");
+    if (!bar) return;
+    offsets.forEach((off, i) => {
+      const m = document.createElement("div");
+      m.className = "marker";
+      m.title = PATTERNS[i].label;
+      m.style.left = ((off / (end - start)) * 100) + "%";
+      m.addEventListener("click", (e) => { e.stopPropagation(); player.goto(off); });
+      bar.appendChild(m);
+    });
+  }, 500);
+  document.querySelectorAll("[data-marker]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      player.goto(offsets[Number(btn.dataset.marker)]);
+      player.play();
+      document.getElementById("player").scrollIntoView({ behavior: "smooth" });
+    });
+  });
+}
+boot().catch((err) => { console.error(err); });
+</script>
+<h2 style="margin: 26px 0 12px">What the agent was hit with</h2>
+<ul class="evidence"><li>
+  <div class="t">Hidden cancellation path</div>
+  <div class="q">"The cancellation link &quot;continue to membership cancellation&quot; is buried at the bottom of the page, below pause and plan switch offers, as a small text link."</div>
+  <button data-marker="0">jump to this moment in the replay</button>
+</li>
+<li>
+  <div class="t">Retention offer wall</div>
+  <div class="q">"&quot;Pause your membership for up to 3 months. Keep your profile, watchlist, and grandfathered price.&quot; and &quot;Standard with ads is only $6.99 a month.&quot; offered before cancellation link."</div>
+  <button data-marker="1">jump to this moment in the replay</button>
+</li>
+<li>
+  <div class="t">Mandatory exit survey</div>
+  <div class="q">"&quot;We can't continue until you tell us why you're thinking of leaving.&quot; - must select a reason to continue cancellation."</div>
+  <button data-marker="2">jump to this moment in the replay</button>
+</li>
+<li>
+  <div class="t">Retention offer wall</div>
+  <div class="q">"&quot;50% off for 3 months — Keep everything you love for just $7.99 a month.&quot;"</div>
+  <button data-marker="3">jump to this moment in the replay</button>
+</li>
+<li>
+  <div class="t">Fake urgency or countdown</div>
+  <div class="q">"&quot;This one-time offer expires in 4:57&quot; - countdown timer to pressure user into accepting the discount."</div>
+  <button data-marker="4">jump to this moment in the replay</button>
+</li>
+<li>
+  <div class="t">Visual misdirection (keep-button styled over cancel)</div>
+  <div class="q">"&quot;Claim my 50% discount&quot; is a prominent link while &quot;No thanks, I still want to cancel&quot; is a smaller, less prominent link below it."</div>
+  <button data-marker="5">jump to this moment in the replay</button>
+</li>
+<li>
+  <div class="t">Guilt-trip screen</div>
+  <div class="q">"&quot;Your watchlist will miss you. You're 2 episodes from finishing Moonrise Protocol. Your 4 saved shows, your viewing history, and your personalized picks will all be gone.&quot;"</div>
+  <button data-marker="6">jump to this moment in the replay</button>
+</li>
+<li>
+  <div class="t">Confirmshaming button copy</div>
+  <div class="q">"&quot;Yes, take it all away from me&quot; - the cancel button is worded to shame the user into keeping the subscription."</div>
+  <button data-marker="7">jump to this moment in the replay</button>
+</li>
+<li>
+  <div class="t">Repeated are-you-sure confirmations</div>
+  <div class="q">"&quot;Are you sure you want to give up the things you love?&quot; - another are-you-sure screen after the survey and the discount offer."</div>
+  <button data-marker="8">jump to this moment in the replay</button>
+</li>
+<li>
+  <div class="t">Artificial waiting or fake processing</div>
+  <div class="q">"&quot;Connecting you to a cancellation specialist — Please stay on this page. A specialist is reviewing your account...&quot; - fake wait screen before allowing cancellation to proceed."</div>
+  <button data-marker="9">jump to this moment in the replay</button>
+</li>
+<li>
+  <div class="t">Threats of losing grandfathered pricing</div>
+  <div class="q">"&quot;You are on a grandfathered plan at $15.99. If you cancel, this price is gone forever. New members pay $22.99 for the same plan.&quot;"</div>
+  <button data-marker="10">jump to this moment in the replay</button>
+</li>
+<li>
+  <div class="t">Repeated are-you-sure confirmations</div>
+  <div class="q">"&quot;Are you absolutely sure?&quot; - yet another confirmation screen, the fourth step after survey, discount offer, guilt trip, and artificial delay."</div>
+  <button data-marker="11">jump to this moment in the replay</button>
+</li></ul>
+<p class="player-note" style="margin-top:22px">Session <code>AlXrdvAc1jqI3sfy82zXq67_ZDLRKPqFdcmBuv8vppBrK7JYxyBzf8RQGmWFG5Q_zyhfh1l6Qqesk6UnVoryil_V2HuQJELewmwBNvl4GUlBzT4iiY6Pu-LuG-VpJ7VintUusaGHmaKubO-fz4G1DS2f0T8sFkc9KPgrzAjS1MDfh8wKe3vagLRXdHFWF1_0FdrVDprMed3k.AZ8gLHg0TbOo5ptmwN5XhQ</code>, run 2026-09-30T20:31:47.019Z.</p>
+<footer class="site">Hotel California: an AI agent that cancels subscriptions and grades the exit. Runs are against the account owner's own subscriptions; scores reflect what the agent was shown on the stated date. Built on Solari cloud browsers + sandboxes, driven by Claude.</footer>
+</div>
+</body>
+</html>
