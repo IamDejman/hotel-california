@@ -73,6 +73,9 @@ if (serviceName === "gym") {
 
 const solari = new Solari({ apiKey })
 
+// Sandbox preview URLs carry an access token; keep it out of published results.
+const stripPreviewToken = (url: string): string => url.replace(/[?&]pt_token=[^&"]*/g, "")
+
 async function runOnce(region: string | null): Promise<RunResult> {
   const started = Date.now()
 
@@ -122,7 +125,7 @@ async function runOnce(region: string | null): Promise<RunResult> {
   return {
     service,
     region: regionLabel,
-    startUrl: config.startUrl,
+    startUrl: stripPreviewToken(config.startUrl),
     ranAt: new Date().toISOString(),
     outcome: run.outcome,
     summary: run.summary,
