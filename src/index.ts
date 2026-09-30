@@ -53,7 +53,11 @@ let gym: GymDeployment | null = null
 let config: ServiceConfig
 if (serviceName === "gym") {
   gym = await deployGym(apiKey)
-  config = { startUrl: `${gym.url.replace(/\/$/, "")}/index.html` }
+  // The preview URL carries its access token in the query string, so append
+  // the page to the path rather than to the end of the string.
+  const start = new URL(gym.url)
+  start.pathname = `${start.pathname.replace(/\/$/, "")}/index.html`
+  config = { startUrl: start.toString() }
 } else {
   const registry = JSON.parse(await readFile("services.json", "utf8")) as Record<
     string,
