@@ -49,9 +49,10 @@ test("the score never drops below 0", () => {
   assert.equal(escapeScore(metrics(), seen(...Array(5).fill("channel_switch"))), 0)
 })
 
-test("being sent to a phone line or a CAPTCHA is an F whatever the score", () => {
+test("not getting out is an F whatever the score", () => {
   assert.equal(grade(95, "blocked"), "F")
   assert.equal(grade(95, "requires_human"), "F")
+  assert.equal(grade(100, "gave_up"), "F")
   assert.equal(grade(62, "cancelled"), "C")
 })
 
