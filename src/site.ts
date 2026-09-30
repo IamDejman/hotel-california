@@ -75,6 +75,7 @@ h2 { font-size: 20px; margin: 36px 0 12px; }
 .bill button:hover { border-color: var(--brass); }
 .bill tfoot td { border-bottom: 0; padding-top: 10px; }
 .bill tfoot tr:last-child td { border-top: 2px solid var(--ivory); padding-top: 14px; font-size: 20px; font-weight: 700; }
+.report { color: var(--muted); max-width: 65ch; }
 .session { color: var(--muted); font-size: 13px; margin-top: 24px; overflow-wrap: anywhere; }
 footer.site { color: var(--muted); font-size: 13px; padding: 48px 0; }
 @media (max-width: 520px) { .register a { grid-template-columns: 72px 1fr; gap: 14px; } .register .score { font-size: 38px; } }
@@ -263,7 +264,6 @@ function runPage(r: RunResult, hasReplay: boolean): string {
   const body = `<header class="site">
   <a class="back" href="../index.html">All checkouts</a>
   <h1 class="run">${esc(nameOf(r))}${esc(regionSuffix(r))}</h1>
-  <p>${prose(r.summary)}</p>
   <dl class="facts">
     <div class="score"><dt>Escape Score</dt><dd class="num grade-${r.grade}">${r.score} <span class="grade">${r.grade}</span></dd></div>
     <div><dt>Outcome</dt><dd>${OUTCOME_LABELS[r.outcome]}</dd></div>
@@ -284,6 +284,8 @@ ${rows || `<tr><td>No charges. A clean exit.</td><td class="pts">0</td></tr>`}
     <tr><td>Escape Score</td><td class="pts grade-${r.grade}">${r.score}</td></tr>
   </tfoot>
 </table>
+<h2>The agent's report</h2>
+<p class="report">${prose(r.summary)}</p>
 <p class="session">Run on ${dateOf(r.ranAt)}. Solari session <code title="${esc(r.sessionId)}">${esc(r.sessionId.slice(0, 16))}…</code></p>`
 
   return shell({

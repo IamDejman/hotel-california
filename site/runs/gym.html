@@ -72,6 +72,7 @@ h2 { font-size: 20px; margin: 36px 0 12px; }
 .bill button:hover { border-color: var(--brass); }
 .bill tfoot td { border-bottom: 0; padding-top: 10px; }
 .bill tfoot tr:last-child td { border-top: 2px solid var(--ivory); padding-top: 14px; font-size: 20px; font-weight: 700; }
+.report { color: var(--muted); max-width: 65ch; }
 .session { color: var(--muted); font-size: 13px; margin-top: 24px; overflow-wrap: anywhere; }
 footer.site { color: var(--muted); font-size: 13px; padding: 48px 0; }
 @media (max-width: 520px) { .register a { grid-template-columns: 72px 1fr; gap: 14px; } .register .score { font-size: 38px; } }
@@ -83,7 +84,6 @@ footer.site { color: var(--muted); font-size: 13px; padding: 48px 0; }
 <header class="site">
   <a class="back" href="../index.html">All checkouts</a>
   <h1 class="run">Streamly+ (practice gym)</h1>
-  <p>Successfully cancelled the Streamly+ subscription. Confirmation: &quot;Your Streamly+ membership is now cancelled. You have access until Sep 14, and you will not be billed again. Confirmation code: HC-2481-ESCAPED.&quot; The cancellation flow contained 10 distinct dark patterns: hidden cancellation link buried below retention offers, forced survey requiring a reason before proceeding, two retention offers (pause membership and 50% discount), fake urgency countdown timer on the discount, misdirection with visually dominant keep-subscription buttons, confirmshaming language (&quot;Yes, take it all away from me&quot;), a guilt trip about losing watchlist and unfinished shows, an artificial delay pretending to connect to a &quot;cancellation specialist,&quot; repeated confirmation screens (at least two are-you-sure pages), and a price hike threat warning about losing grandfathered pricing forever.</p>
   <dl class="facts">
     <div class="score"><dt>Escape Score</dt><dd class="num grade-F">26 <span class="grade">F</span></dd></div>
     <div><dt>Outcome</dt><dd>Cancelled</dd></div>
@@ -218,6 +218,8 @@ boot().catch((err) => {
     <tr><td>Escape Score</td><td class="pts grade-F">26</td></tr>
   </tfoot>
 </table>
+<h2>The agent's report</h2>
+<p class="report">Successfully cancelled the Streamly+ subscription. Confirmation: &quot;Your Streamly+ membership is now cancelled. You have access until Sep 14, and you will not be billed again. Confirmation code: HC-2481-ESCAPED.&quot; The cancellation flow contained 10 distinct dark patterns: hidden cancellation link buried below retention offers, forced survey requiring a reason before proceeding, two retention offers (pause membership and 50% discount), fake urgency countdown timer on the discount, misdirection with visually dominant keep-subscription buttons, confirmshaming language (&quot;Yes, take it all away from me&quot;), a guilt trip about losing watchlist and unfinished shows, an artificial delay pretending to connect to a &quot;cancellation specialist,&quot; repeated confirmation screens (at least two are-you-sure pages), and a price hike threat warning about losing grandfathered pricing forever.</p>
 <p class="session">Run on Sep 30, 2026. Solari session <code title="AlXrdvAc1jqI3sfy82zXq67_ZDLRKPqFdcmBuv8vppBrK7JYxyBzf8RQGmWFG5Q_zyhfh1l6Qqesk6UnVoryil_V2HuQJELewmwBNvl4GUlBzT4iiY6Pu-LuG-VpJ7VintUusaGHmaKubO-fz4G1DS2f0T8sFkc9KPgrzAjS1MDfh8wKe3vagLRXdHFWF1_0FdrVDprMed3k.AZ8gLHg0TbOo5ptmwN5XhQ">AlXrdvAc1jqI3sfy…</code></p>
 </main>
 <footer class="site wrap">Hotel California cancels subscriptions with an AI agent and scores how hard the company makes it. Every run is against the account owner's own subscription, and each score reflects what the agent was shown on that date. Built on <a href="https://getsolari.com">Solari</a> cloud browsers and sandboxes, driven by Claude. <a href="https://github.com/IamDejman/hotel-california">Source on GitHub</a>.</footer>
