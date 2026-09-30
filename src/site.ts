@@ -206,7 +206,7 @@ ${page.extraHead ?? ""}
 <main class="wrap">
 ${page.body}
 </main>
-<footer class="site wrap">Runs use the owner’s own subscriptions. Built on <a href="https://getsolari.com">Solari</a> and Claude. <a href="https://github.com/IamDejman/hotel-california">Source</a></footer>
+<footer class="site wrap">Built on <a href="https://getsolari.com">Solari</a> and Claude. <a href="https://github.com/IamDejman/hotel-california">Source</a></footer>
 </body>
 </html>
 `
