@@ -226,12 +226,12 @@ function indexPage(results: RunResult[]): string {
     .join("\n")
   const body = `<header class="site">
   <h1 class="marquee">Hotel California</h1>
-  <p>An AI agent tries to cancel. Every dark pattern goes on the bill.</p>
+  <p>We send an AI agent to cancel a subscription and score how hard the company makes it to leave.</p>
 </header>
 ${rows ? `<ol class="register">${rows}</ol>` : `<p>No runs yet. Run <code>npm start -- gym</code> to score the practice gym, then <code>npm run site</code>.</p>`}`
   return shell({
     title: "Hotel California: the Cancellation Difficulty Index",
-    description: "An AI agent cancels subscriptions, bills companies for every dark pattern on the way out, and keeps the replay as the receipt.",
+    description: "We send an AI agent to cancel a subscription and score how hard the company makes it to leave. Every run has a replay.",
     path: "",
     body,
   })
