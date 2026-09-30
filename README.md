@@ -8,8 +8,9 @@ the experience. The output is a **Cancellation Difficulty Index**: a public
 leaderboard of who lets you leave with dignity and who makes you fight for it,
 with a DOM-level session replay of every run as the receipt.
 
-Built on [Solari](https://getsolari.com) cloud browsers and sandboxes, driven
-by [Claude](https://www.anthropic.com).
+Built on [Solari](https://getsolari.com) cloud browsers and sandboxes. The agent
+runs on Claude Sonnet 5.5 by default, or on any model with tool calling through
+an OpenAI-compatible API.
 
 **[Watch the replays](https://iamdejman.github.io/hotel-california/)**: the
 agent's first checkout, from the Streamly+ practice gym, scored **26/100
@@ -40,7 +41,7 @@ pay for:
 flowchart LR
   A[services.json or gym] --> B[Solari sandbox\nserves the gym on a public URL]
   A --> C[Solari cloud browser\nstealth + proxy + recording + profile]
-  C --> D[Claude agent loop\nclick / type / record_pattern / finish]
+  C --> D[Agent loop, Claude by default\nclick / type / record_pattern / finish]
   D --> E[Escape Score + pattern log]
   C --> F[rrweb session replay]
   E --> G[Replay Theater site\n+ leaderboard + region reports]
@@ -81,6 +82,18 @@ Every run starts at 100 and bleeds points for friction:
 90+ is an A: they let you go like adults. Under 40 is an F: welcome to the
 Hotel California. A run that never gets out, whether it hits "call us to cancel",
 a CAPTCHA, or a dead end, is an automatic F.
+
+**Where the numbers come from.** The categories follow published dark-pattern
+research: Harry Brignull's [deceptive.design](https://www.deceptive.design/types),
+the FTC staff report
+[Bringing Dark Patterns to Light](https://www.ftc.gov/reports/bringing-dark-patterns-light)
+(2022), and Mathur et al.,
+[Dark Patterns at Scale](https://arxiv.org/abs/1907.07032) (2019). The weights
+are my own judgement and follow one rule: the more a pattern stops you from
+leaving, the more it costs. Being sent to a phone line can stop you outright, so
+it costs 25. An extra confirm screen only slows you down, so it costs 3. They
+are not calibrated against user data. To change them, edit `PATTERN_WEIGHTS` in
+[`src/score.ts`](src/score.ts).
 
 Results land in [`LEADERBOARD.md`](LEADERBOARD.md).
 
@@ -132,6 +145,40 @@ Output from the published run (quotes trimmed):
     - repeated_confirmation: "Are you absolutely sure?"
   clicks 8, pages 8, 115s
 ```
+
+## What has been tested
+
+| Run | Result |
+| --- | --- |
+| Practice site, Claude Opus 4.6 (the published run) | Cancelled. 26/100, grade F, 12 dark patterns |
+| Practice site, Claude Sonnet 5.5 (the default) | Cancelled. 30/100, grade F, 11 dark patterns, 49s |
+| Practice site from the US and UK (`--regions us,gb`) | Both cancelled through residential proxies. Scores within 3 points |
+| Practice site through the OpenAI-compatible path (Claude via its compatible endpoint) | Cancelled. 30/100, grade F, 11 dark patterns, 51s. Other providers use the same path but have not been run |
+| Real sites, logged out (Netflix, New York Times) | Both stopped at the login wall and reported "needs a human" with no false dark patterns. Not published |
+| A real subscription, logged in | Not run yet. It needs a saved login profile and a subscription you are willing to cancel |
+
+The real-site runs found two bugs the practice site never showed: a redirect
+during page reading crashed the run, and long session IDs broke replay
+filenames. Both are fixed.
+
+## Choosing a model
+
+The agent runs on Claude Sonnet 5.5 by default. Set `AI_MODEL` in `.env` to use
+another Claude model.
+
+To use another provider, point it at any OpenAI-compatible API. The model must
+support tool calling.
+
+```bash
+AI_PROVIDER=openai
+OPENAI_API_KEY=...
+OPENAI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai/   # Gemini; leave unset for OpenAI
+AI_MODEL=gemini-2.5-pro
+```
+
+The same settings work for OpenAI, OpenRouter, Groq, and a local Ollama
+(`OPENAI_BASE_URL=http://localhost:11434/v1`). Results depend on the model: a
+small model may miss dark patterns or get stuck.
 
 ## Scoring a real service
 
@@ -199,7 +246,8 @@ experience, which you are entitled to do.
 
 ```
 src/index.ts    orchestrator: launch, run (per region), score, save, report
-src/agent.ts    the Claude loop and its tools (click, type, record_pattern, finish)
+src/agent.ts    the agent loop and its tools (click, type, record_pattern, finish)
+src/model.ts    the model behind it: Anthropic, or any OpenAI-compatible API
 src/browser.ts  page observation: tagged interactive elements + text digest
 src/score.ts    the Escape Score rubric
 src/gym.ts      deploys the gym into a Solari sandbox with a public URL
