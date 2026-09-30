@@ -29,6 +29,19 @@ export interface Observation {
 }
 
 export async function observe(page: AgentPage): Promise<Observation> {
+  // A redirect (a login bounce, say) can replace the page mid-read; wait and read again.
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await readPage(page)
+    } catch (err) {
+      const navigating = err instanceof Error && /context was destroyed|navigat/i.test(err.message)
+      if (!navigating || attempt >= 3) throw err
+      await page.waitForTimeout(1500)
+    }
+  }
+}
+
+async function readPage(page: AgentPage): Promise<Observation> {
   await page.waitForTimeout(600) // let navigations and reflows settle
   // Passed as a string so tsx/esbuild never rewrites it: its injected
   // __name() helper does not exist inside the browser page.
